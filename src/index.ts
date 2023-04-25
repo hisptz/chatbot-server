@@ -1,6 +1,7 @@
 import {config} from "dotenv";
 import express from "express";
-import entries from "./routes/message";
+// import entries from "./routes/message";
+import treeRoutes from "./routes/trees/routes";
 
 config()
 const port = process.env.PORT || 3000;
@@ -13,13 +14,15 @@ app.use(express.urlencoded({extended: true}));
 
 app.use(express.static("public"));
 
-app.use(`${apiMountPoint}/message`, entries);
+// app.use(`${apiMountPoint}/message`, entries);
+app.use(`${apiMountPoint}/trees`, treeRoutes);
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
     res.send("Hello, Welcome to the chat-bot!, Some of the routes are /entries");
 })
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+
 })
 
