@@ -1,9 +1,9 @@
 import client from "../../client"
+import prisma from "../../client"
 import {AnswerData, TreeData, TreeStateData} from "../../interfaces/tree";
 import {v4 as uuid} from 'uuid';
-import prisma from "../../client";
-import {Prisma, TreeState} from "@prisma/client";
-import {asyncify, map, mapSeries} from "async";
+import {Action, Prisma, Tree, TreeState} from "@prisma/client";
+import {asyncify, mapSeries} from "async";
 import {find, flattenDeep} from "lodash";
 
 
@@ -89,10 +89,77 @@ export async function createTree(tree: TreeData) {
     })
 }
 
-export async function getTrees() {
-    return client.tree.findMany({
+
+async function getTreeStateFromDB(state: TreeState): Promise<TreeStateData> {
+    const transitions = await client.transition.findMany({
+        where: {
+            currentState: {
+                id: state.id
+            }
+        },
         include: {
-            states: true
+            answer: true,
+            nextState: true
         }
     });
+
+    const answers = transitions.map(transition => {
+
+        return {
+            id: transition.answer.id,
+            text: transition.answer.name,
+            description: transition.answer.description,
+            next: transition.nextState.id
+        }
+    });
+
+    return {
+        errorResponse: "",
+        answers,
+        type: state.type as any,
+        question: state.name,
+        id: state.id
+    }
+
+}
+
+
+async function getTreeDataFromDBObject(tree: Tree & { states: TreeState[], completion: Action }): Promise<TreeData> {
+    return {
+        id: tree.id,
+        states: await mapSeries(tree.states, asyncify(async (state: TreeState) => getTreeStateFromDB(state))),
+        initialState: tree.rootState,
+        trigger: tree.trigger,
+        complete: tree.completion
+    };
+}
+
+export async function getTrees(): Promise<TreeData[]> {
+    const trees = await client.tree.findMany({
+        include: {
+            states: true,
+            completion: true
+        }
+    });
+
+    return mapSeries(trees ?? [], asyncify(async (tree: Tree & {
+        states: TreeState[],
+        completion: Action
+    }) => await getTreeDataFromDBObject(tree)));
+}
+
+export async function getTree(id: string) {
+    const tree = await client.tree.findUnique({
+        where: {
+            id
+        },
+        include: {
+            states: true,
+            completion: true
+        }
+    });
+    if (!tree) {
+        return null;
+    }
+    return await getTreeDataFromDBObject(tree);
 }
