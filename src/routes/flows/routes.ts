@@ -1,33 +1,31 @@
 import {Router} from "express";
-import {createTree, getTree, getTrees} from "./utils";
-import {treeSchema} from "../../interfaces/tree";
+import {createFlow, getFlow, getFlows} from "./utils";
+import {flowSchema} from "../../interfaces/flow";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
-    const trees = await getTrees();
-    res.json(trees);
-})
-
-
+    const flows = await getFlows();
+    res.json(flows);
+});
 router.get("/:id", async (req, res) => {
     const {id} = req.params;
     if (!id) return res.status(400).json({message: "Invalid id"});
 
-    const tree = await getTree(id);
-    if (!tree) return res.status(404).json({message: "Tree not found"});
-    res.json(tree);
+    const flow = await getFlow(id);
+    if (!flow) return res.status(404).json({message: "Flow not found"});
+    res.json(flow);
 })
-router.post("", async (req, res) => {
+router.post("/", async (req, res) => {
     const data = req.body;
-    const parsedData = treeSchema.safeParse(data);
+    const parsedData = flowSchema.safeParse(data);
     if (!parsedData.success) {
         res.status(400).json({
             message: "Invalid data",
             errors: parsedData.error.errors
         })
     } else {
-        const response = await createTree(parsedData.data);
+        const response = await createFlow(parsedData.data);
         res.json(response).status(201);
     }
 })
