@@ -14,7 +14,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use(express.static("public"));
 
-app.use(`${apiMountPoint}/message`, message);
+app.use(`${apiMountPoint}/chat`, message);
 app.use(`${apiMountPoint}/flows`, flowRoutes);
 
 app.get('/', (req, res) => {

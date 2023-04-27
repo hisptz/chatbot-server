@@ -2,7 +2,7 @@ import {Action, Connection, Entry, FlowState, Option, Route, Session} from "@pri
 import {Message, OutGoingMessage} from "../interfaces/message";
 import client from "../client";
 import {DateTime} from "luxon";
-import {cloneDeep, set} from "lodash";
+import {cloneDeep, get, reduce, set} from "lodash";
 
 
 type SessionWithIncludes = Session & {
@@ -41,7 +41,7 @@ export class FlowEngine {
     }
 
     get sessionStep() {
-        return this.sessionData.step
+        return this.session?.step as string
     }
 
     static async createConnection(identifier: string) {
@@ -150,7 +150,7 @@ export class FlowEngine {
         return this;
     }
 
-    async runAction() {
+    async runAction(): Promise<OutGoingMessage | null> {
         const currentState = cloneDeep(this.currentState);
         const action = currentState.action;
         let message = null;
@@ -166,11 +166,13 @@ export class FlowEngine {
         }
         if (currentState.id !== this.currentState?.id) {
             //State has changed, run the action again
-            await this.runAction();
+            return await this.runAction();
         }
         if (message) {
             return message;
         }
+
+        return null;
     }
 
     async updateSession(key: string, value: any) {
@@ -221,14 +223,14 @@ export class FlowEngine {
         const sessionData = this.sessionData;
         const {routes} = action;
         const route = routes.find(route => {
-            const sanitizedExpression = Object.values(sessionData).reduce((acc, curr) => acc.replace(new RegExp(`{${curr}}`, "g"), curr), route.expression)
+            const sanitizedExpression = reduce(Object.keys(sessionData), (acc, curr) => acc.replaceAll(new RegExp(`{${curr}}`, "g"), `'${get(sessionData, curr)}'`), route.expression as string)
             return eval(sanitizedExpression);
         });
         if (!route) {
             await this.updateSessionState(action.nextState as string);
         } else {
             await this.updateSessionState(route.nextStateId as string);
-            await this.updateSessionData("step", "COMPLETED");
+            await this.updateSession("step", "COMPLETED");
         }
 
     }
@@ -265,6 +267,11 @@ export class FlowEngine {
             type: "text",
             to: this.connection.identifier
         }
+    }
+
+    async runWebhookAction(action: Action) {
+        const {webhookURL, params, dataKey} = action;
+
     }
 
     async runInputAction(action: Action & { options: Option[] }): Promise<OutGoingMessage> {

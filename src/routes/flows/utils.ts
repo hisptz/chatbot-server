@@ -33,7 +33,8 @@ export async function convertFlowStateToFlowStateData(flowState: FlowState & {
             text: action.text,
             params: action.params,
             url: action.webhookURL,
-            routes: action.routes
+            routes: action.routes,
+            options: action.options
         },
 
     } as FlowStateData
