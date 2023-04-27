@@ -15,6 +15,7 @@ datasource db {
 // properly
 // enum ActionType {
 //   ROUTER
+//   ASSIGN
 //   FUNCTION
 //   WEBHOOK
 //   MENU
@@ -33,11 +34,14 @@ model Action {
   webhookURL   String?
   FlowState    FlowState[]
   routes       Route[]
+  options      Option[]
 }
 
 model Option {
-  id   String @id @default(uuid())
-  text String
+  id       String @id @default(uuid())
+  text     String
+  action   Action @relation(fields: [actionId], references: [id])
+  actionId String
 }
 
 model Route {
@@ -75,6 +79,11 @@ model Connection {
   Session    Session[]
 }
 
+// enum SessionStateStep {
+//   WAITING
+//   COMPLETED
+// }
+
 model Session {
   id           String     @id @default(uuid())
   cancelled    Boolean?
@@ -88,6 +97,7 @@ model Session {
   tries        Int
   Entry        Entry[]
   data         String
+  step         String?
 }
 
 model Entry {

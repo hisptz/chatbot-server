@@ -5,6 +5,19 @@ import {asyncify, forEachSeries, mapSeries} from "async";
 import {isEmpty} from "lodash";
 
 
+const flowIncludes = {
+    states: {
+        include: {
+            action: {
+                include: {
+                    routes: true,
+                    options: true
+                }
+            }
+        }
+    }
+}
+
 export async function convertFlowStateToFlowStateData(flowState: FlowState & {
     action: Action
 }): Promise<FlowStateData> {
@@ -39,17 +52,7 @@ export async function convertFlowToFlowData(flow: Flow & { states: FlowState[] }
 
 export async function getFlows(): Promise<FlowData[]> {
     const flows = await client.flow.findMany({
-        include: {
-            states: {
-                include: {
-                    action: {
-                        include: {
-                            routes: true
-                        }
-                    }
-                }
-            }
-        }
+        include: flowIncludes
     });
     return await mapSeries(flows, asyncify(convertFlowToFlowData)) as FlowData[];
 }
@@ -59,17 +62,7 @@ export async function getFlow(id: string): Promise<FlowData> {
         where: {
             id
         },
-        include: {
-            states: {
-                include: {
-                    action: {
-                        include: {
-                            routes: true
-                        }
-                    }
-                }
-            }
-        }
+        include: flowIncludes
     });
     if (!flow) {
         throw Error(`Flow with id ${id} could not be found`)
@@ -109,6 +102,21 @@ export async function createState(stateData: FlowStateData, flowId: string): Pro
             })
         })
     }
+    if (!isEmpty(actionData.options)) {
+        await forEachSeries(actionData.options, async (option: any) => {
+            await client.option.create({
+                data: {
+                    action: {
+                        connect: {
+                            id: action.id
+                        }
+                    },
+                    text: option.text,
+                    id: option.id
+                }
+            })
+        })
+    }
 
     return client.flowState.create({
         data: {
@@ -142,17 +150,7 @@ export async function createFlow(flowData: FlowData): Promise<FlowData> {
         where: {
             id
         },
-        include: {
-            states: {
-                include: {
-                    action: {
-                        include: {
-                            routes: true
-                        }
-                    }
-                }
-            }
-        }
+        include: flowIncludes
     })
     if (!flow) {
         throw Error("Error saving flow")
