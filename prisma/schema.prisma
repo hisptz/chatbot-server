@@ -15,37 +15,40 @@ datasource db {
 // properly
 
 model Question {
-  id            Int         @id @default(autoincrement())
+  id            String      @id @default(uuid())
   text          String
   errorResponse String?
   TreeState     TreeState[]
 }
 
 model Answer {
-  id          Int          @id @default(autoincrement())
+  id          String       @id @default(uuid())
   name        String
   description String
   Transition  Transition[]
 }
 
 model Transition {
-  id             Int        @id @default(autoincrement())
-  currentState   TreeState  @relation("CurrentState", fields: [currentStateId], references: [id])
-  currentStateId Int
-  nextState      TreeState  @relation("NextState", fields: [nextStateId], references: [id])
-  nextStateId    Int
-  answer         Answer     @relation(fields: [answerId], references: [id])
-  answerId       Int
+  id             String    @id @default(uuid())
+  currentState   TreeState @relation("CurrentState", fields: [currentStateId], references: [id])
+  currentStateId String
+  nextState      TreeState @relation("NextState", fields: [nextStateId], references: [id])
+  nextStateId    String
+  answer         Answer    @relation(fields: [answerId], references: [id])
+  answerId       String
   name           String
   Entry          Entry[]
 }
 
 model TreeState {
-  id           Int          @id @default(autoincrement())
+  id           String       @id @default(uuid())
   name         String
+  type         String
   retries      Int
   question     Question     @relation(fields: [questionId], references: [id])
-  questionId   Int
+  owningTree   Tree         @relation("OwningTree", fields: [treeId], references: [id])
+  treeId       String
+  questionId   String
   Tree         Tree[]
   Session      Session[]
   CurrentState Transition[] @relation("CurrentState")
@@ -53,49 +56,51 @@ model TreeState {
 }
 
 model Action {
-  id   Int    @id @default(autoincrement())
+  id   String @id @default(uuid())
   type String
   Tree Tree[]
 }
 
 model Tree {
-  id           Int       @id @default(autoincrement())
+  id           String      @id @default(uuid())
   trigger      String
-  rootState    TreeState @relation(fields: [rootStateId], references: [id])
-  rootStateId  Int
-  completion   Action    @relation(fields: [completionId], references: [id])
-  completionId Int
+  rootState    String
+  completion   Action      @relation(fields: [completionId], references: [id])
+  completionId String
   Session      Session[]
+  states       TreeState[] @relation("OwningTree")
+  TreeState    TreeState?  @relation(fields: [treeStateId], references: [id])
+  treeStateId  String?
 }
 
 model Connection {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   phoneNumber String
   name        String
   Session     Session[]
 }
 
 model Session {
-  id           Int        @id @default(autoincrement())
+  id           String     @id @default(uuid())
   cancelled    Boolean?
   startTime    DateTime   @default(now())
   connection   Connection @relation(fields: [connectionId], references: [id])
-  connectionId Int
+  connectionId String
   state        TreeState  @relation(fields: [stateId], references: [id])
-  stateId      Int
+  stateId      String
   tree         Tree       @relation(fields: [treeId], references: [id])
-  treeId       Int
+  treeId       String
   tries        Int
   Entry        Entry[]
 }
 
 model Entry {
-  id           Int        @id
+  id           String     @id @default(uuid())
   time         DateTime   @default(now())
   text         String
   sequence     Int
   transition   Transition @relation(fields: [transitionId], references: [id])
-  transitionId Int
+  transitionId String
   session      Session    @relation(fields: [sessionId], references: [id])
-  sessionId    Int
+  sessionId    String
 }
