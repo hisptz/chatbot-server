@@ -3,6 +3,7 @@ import {Message, OutGoingMessage} from "../interfaces/message";
 import client from "../client";
 import {DateTime} from "luxon";
 import {cloneDeep, get, reduce, set} from "lodash";
+import axios from "axios";
 
 
 type SessionWithIncludes = Session & {
@@ -74,6 +75,9 @@ export class FlowEngine {
                     startTime: {
                         lte: DateTime.now().toJSDate(),
                         gte: DateTime.now().minus({hour: 1}).toJSDate()
+                    },
+                    cancelled: {
+                        not: true,
                     }
                 }
             },
@@ -145,6 +149,12 @@ export class FlowEngine {
         return this;
     }
 
+
+    async closeSession() {
+        await this.updateSession("step", "COMPLETED");
+        await this.updateSession("cancelled", true);
+    }
+
     setMessage(message: Message) {
         this.message = message;
         return this;
@@ -163,6 +173,13 @@ export class FlowEngine {
                 break;
             case "ROUTER":
                 await this.runRouteAction(action);
+                break;
+            case "WEBHOOK":
+                await this.runWebhookAction(action);
+                break;
+            case "QUIT":
+                message = await this.runQuitAction(action);
+                break;
         }
         if (currentState.id !== this.currentState?.id) {
             //State has changed, run the action again
@@ -200,6 +217,12 @@ export class FlowEngine {
                 id: stateId
             }
         })
+    }
+
+
+    sanitizeText(text: string): string {
+        const sessionData = this.sessionData;
+        return reduce(Object.keys(sessionData), (acc, curr) => acc.replaceAll(new RegExp(`{${curr}}`, "g"), `'${get(sessionData, curr)}'`), text)
     }
 
 
@@ -270,9 +293,57 @@ export class FlowEngine {
     }
 
     async runWebhookAction(action: Action) {
-        const {webhookURL, params, dataKey} = action;
+        const {webhookURL, params, body, responseDataPath, method, dataKey, headers, nextState,} = action;
+        if (!webhookURL) {
+            throw Error("Invalid webhook action. Missing url")
+        }
+        const paramsObject = params ? JSON.parse(params ?? '') : undefined;
+        const headerObject = headers ? JSON.parse(headers ?? '') : undefined;
+        const bodyObject = body ? JSON.parse(body ?? '') : undefined;
 
+        const axiosInstance = axios.create({
+            data: bodyObject,
+            headers: {
+                "Content-Type": 'application/json',
+                ...(headerObject ?? {}),
+            },
+            method: method ?? 'GET',
+            params: paramsObject,
+        });
+        try {
+            const response = method === "POST" ? await axiosInstance.post(webhookURL) : await axiosInstance.get(webhookURL)
+            if ([200, 304].includes(response.status)) {
+                //set data to data key
+                if (dataKey) {
+                    const dataValue = responseDataPath ? get(response.data, responseDataPath) : response.data;
+                    await this.updateSessionData(dataKey, dataValue);
+                    if (nextState) {
+                        await this.updateSessionState(nextState);
+                    } else {
+                        throw Error("Missing next step to move to")
+                    }
+                } else {
+                    throw Error("Missing data key to assign value to.")
+                }
+
+            }
+        } catch (e: any) {
+            throw Error("Error calling webhook. " + e.message)
+        }
     }
+
+    async runQuitAction(action: Action): Promise<OutGoingMessage> {
+        const {text} = action;
+        await this.closeSession();
+        const sanitizedText = this.sanitizeText(text as string);
+
+        return {
+            content: sanitizedText ?? 'Session done',
+            type: "text",
+            to: this.connection.identifier,
+        }
+    }
+
 
     async runInputAction(action: Action & { options: Option[] }): Promise<OutGoingMessage> {
         if (this.sessionStep === "WAITING") {

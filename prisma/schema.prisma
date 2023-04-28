@@ -23,18 +23,27 @@ datasource db {
 //   QUIT
 // }
 
+// enum ActionAPICallMethod{
+//   GET
+//   POST
+// }
+
 model Action {
-  id           String      @id @default(uuid())
-  type         String
-  nextState    String?
-  text         String?
-  params       String?
-  dataKey      String?
-  functionName String?
-  webhookURL   String?
-  FlowState    FlowState[]
-  routes       Route[]
-  options      Option[]
+  id               String      @id @default(uuid())
+  type             String
+  nextState        String?
+  text             String?
+  params           String?
+  dataKey          String?
+  functionName     String?
+  webhookURL       String?
+  responseDataPath String?
+  headers          String?
+  method           String?
+  body             String?
+  FlowState        FlowState[]
+  routes           Route[]
+  options          Option[]
 }
 
 model Option {
