@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {createFlow, getFlow, getFlows} from "./utils";
+import {createFlow, deleteFlow, getFlow, getFlows} from "./utils";
 import {flowSchema} from "../../interfaces/flow";
 
 const router = Router();
@@ -13,6 +13,14 @@ router.get("/:id", async (req, res) => {
     if (!id) return res.status(400).json({message: "Invalid id"});
 
     const flow = await getFlow(id);
+    if (!flow) return res.status(404).json({message: "Flow not found"});
+    res.json(flow);
+})
+
+router.delete("/:id", async (req, res) => {
+    const {id} = req.params;
+    if (!id) return res.status(400).json({message: "Invalid id"});
+    const flow = await deleteFlow(id);
     if (!flow) return res.status(404).json({message: "Flow not found"});
     res.json(flow);
 })

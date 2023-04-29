@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {MessageSchema} from "../../interfaces/message";
+import {IncomingMessageSchema} from "../../interfaces/message";
 import {FlowEngine} from "../../engine/engine";
 
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 router.post('', async (req, res) => {
     const data = req.body;
 
-    const parsedData = MessageSchema.safeParse(data);
+    const parsedData = IncomingMessageSchema.safeParse(data);
 
     if (!parsedData.success) {
         res.status(400).send({

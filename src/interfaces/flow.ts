@@ -1,4 +1,5 @@
 import z from "zod";
+import {Message} from "./message";
 
 
 export enum ActionType {
@@ -25,7 +26,8 @@ export const quitActionSchema = z.object({
     ...genericActionSchema,
     type: z.literal(ActionType.QUIT),
     text: z.string({description: "Text to display when quitting the flow"}),
-    nextState: z.undefined()
+    nextState: z.undefined(),
+    messageFormat: Message.optional()
 })
 
 export const routerActionSchema = z.object({
@@ -58,7 +60,8 @@ export const webhookActionSchema = z.object({
     headers: z.object({}).optional(),
     body: z.object({}).optional(),
     dataKey: z.string({description: "Data key to save the answer to "}),
-    responseDataPath: z.string({description: 'Data accessor for the response of the api call'})
+    responseDataPath: z.string({description: 'Data accessor for the response of the api call'}).optional(),
+    responseType: z.enum(['json', 'array-buffer']).optional()
 
 })
 export const functionActionSchema = z.object({

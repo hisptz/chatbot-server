@@ -76,6 +76,21 @@ export async function getFlow(id: string): Promise<FlowData> {
 
 }
 
+export async function deleteFlow(id: string): Promise<FlowData> {
+    const flow = await client.flow.delete({
+
+        where: {
+            id
+        },
+        include: flowIncludes
+    });
+    if (!flow) {
+        throw Error(`Flow with id ${id} could not be found`)
+    }
+    return await convertFlowToFlowData(flow);
+
+}
+
 export async function createState(stateData: FlowStateData, flowId: string): Promise<FlowState> {
     const {id} = stateData ?? {}
     const actionData: any = stateData.action;
@@ -91,7 +106,9 @@ export async function createState(stateData: FlowStateData, flowId: string): Pro
             webhookURL: actionData.url,
             body: actionData.body,
             method: actionData.method,
-            responseDataPath: actionData.responseDataPath
+            responseDataPath: actionData.responseDataPath,
+            messageFormat: JSON.stringify(actionData.messageFormat),
+            responseType: actionData.responseType
         }
     })
 
@@ -166,3 +183,4 @@ export async function createFlow(flowData: FlowData): Promise<FlowData> {
     return convertFlowToFlowData(flow);
 
 }
+

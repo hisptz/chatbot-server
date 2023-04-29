@@ -1,9 +1,9 @@
 import {Action, Connection, Entry, FlowState, Option, Route, Session} from "@prisma/client";
-import {Message, OutGoingMessage} from "../interfaces/message";
+import {IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../interfaces/message";
 import client from "../client";
 import {DateTime} from "luxon";
 import {cloneDeep, get, reduce, set} from "lodash";
-import axios from "axios";
+import axios, {ResponseType} from "axios";
 
 
 type SessionWithIncludes = Session & {
@@ -26,7 +26,7 @@ const sessionIncludes = {
 
 export class FlowEngine {
     protected session?: SessionWithIncludes;
-    protected message?: Message;
+    protected message?: IncomingMessage;
     protected entry?: Entry;
 
     get currentState(): FlowState & { action: Action & { options: Option[], routes: Route[] } } {
@@ -65,7 +65,7 @@ export class FlowEngine {
         return connection;
     }
 
-    static async getOrInitSession(connection: Connection, message: Message): Promise<SessionWithIncludes> {
+    static async getOrInitSession(connection: Connection, message: IncomingMessage): Promise<SessionWithIncludes> {
         const activeSession = await client.session.findFirst({
             where: {
                 AND: {
@@ -86,7 +86,7 @@ export class FlowEngine {
         if (!activeSession) {
             const flow = await client.flow.findUnique({
                 where: {
-                    trigger: message.content
+                    trigger: message.message.text
                 },
 
             });
@@ -135,10 +135,10 @@ export class FlowEngine {
         return activeSession;
     }
 
-    static async init(message: Message): Promise<FlowEngine> {
+    static async init(message: IncomingMessage): Promise<FlowEngine> {
         const {from} = message;
         const engine = new FlowEngine();
-        const connection = await FlowEngine.getOrInitConnection(from);
+        const connection = await FlowEngine.getOrInitConnection(from.number);
         engine.setSession(await FlowEngine.getOrInitSession(connection, message));
         engine.setMessage(message);
         return engine;
@@ -155,7 +155,7 @@ export class FlowEngine {
         await this.updateSession("cancelled", true);
     }
 
-    setMessage(message: Message) {
+    setMessage(message: IncomingMessage) {
         this.message = message;
         return this;
     }
@@ -164,22 +164,31 @@ export class FlowEngine {
         const currentState = cloneDeep(this.currentState);
         const action = currentState.action;
         let message = null;
-        switch (action.type) {
-            case "MENU":
-                message = await this.runMenuAction(action);
-                break;
-            case "INPUT":
-                message = await this.runInputAction(action);
-                break;
-            case "ROUTER":
-                await this.runRouteAction(action);
-                break;
-            case "WEBHOOK":
-                await this.runWebhookAction(action);
-                break;
-            case "QUIT":
-                message = await this.runQuitAction(action);
-                break;
+        try {
+            switch (action.type) {
+                case "MENU":
+                    message = await this.runMenuAction(action);
+                    break;
+                case "INPUT":
+                    message = await this.runInputAction(action);
+                    break;
+                case "ROUTER":
+                    await this.runRouteAction(action);
+                    break;
+                case "WEBHOOK":
+                    await this.runWebhookAction(action);
+                    break;
+                case "QUIT":
+                    message = await this.runQuitAction(action);
+                    break;
+            }
+        } catch (e: any) {
+            // A passable error,
+            //TODO: Should session be cancelled??
+            return this.getReplyMessage({
+                type: MessageType.CHAT,
+                text: e.message ?? 'Something went wrong.'
+            })
         }
         if (currentState.id !== this.currentState?.id) {
             //State has changed, run the action again
@@ -188,7 +197,6 @@ export class FlowEngine {
         if (message) {
             return message;
         }
-
         return null;
     }
 
@@ -222,16 +230,20 @@ export class FlowEngine {
 
     sanitizeText(text: string): string {
         const sessionData = this.sessionData;
-        return reduce(Object.keys(sessionData), (acc, curr) => acc.replaceAll(new RegExp(`{${curr}}`, "g"), `'${get(sessionData, curr)}'`), text)
+        return this.replaceStringValues(sessionData, text);
+    }
+
+    replaceStringValues(data: Record<string, any>, text: string): string {
+        return reduce(Object.keys(data), (acc, curr) => acc.replaceAll(new RegExp(`{${curr}}`, "g"), `${get(data, curr)}`), text)
     }
 
 
     getSelectedMenuOption(options: Option[]): string {
-        const index = Number(this.message?.content);
+        const index = Number(this.message?.message?.text);
         let option = null;
         if (isNaN(index)) {
             //Try matching using string
-            option = options.find(option => this.message?.content?.match(option.text));
+            option = options.find(option => this.message?.message?.text?.match(option.text));
         } else {
             //Yeey, we got a number
             option = options[index - 1];
@@ -246,7 +258,7 @@ export class FlowEngine {
         const sessionData = this.sessionData;
         const {routes} = action;
         const route = routes.find(route => {
-            const sanitizedExpression = reduce(Object.keys(sessionData), (acc, curr) => acc.replaceAll(new RegExp(`{${curr}}`, "g"), `'${get(sessionData, curr)}'`), route.expression as string)
+            const sanitizedExpression = this.replaceStringValues(sessionData, route.expression as string)
             return eval(sanitizedExpression);
         });
         if (!route) {
@@ -260,10 +272,22 @@ export class FlowEngine {
 
     async runAssignAction(action: Action & { options: Option[] }) {
         const {options, text, dataKey, type} = action;
-        const value = type === "MENU" ? this.getSelectedMenuOption(options) : this.message?.content;
+        const value = type === "MENU" ? this.getSelectedMenuOption(options) : this.message?.message.text;
         await this.updateSessionData(dataKey as string, value);
         await this.updateSession("step", "COMPLETED");
         await this.updateSessionState(action.nextState as string);
+    }
+
+
+    getReplyMessage(message: MessageConfig): OutGoingMessage {
+        return {
+            to: [
+                {
+                    number: this.connection.identifier
+                }
+            ],
+            message
+        }
     }
 
     async runMenuAction(action: Action & { options: Option[] }): Promise<OutGoingMessage> {
@@ -272,37 +296,36 @@ export class FlowEngine {
                 await this.runAssignAction(action);
             } catch (e: any) {
                 if (e.message === "Invalid option") {
-                    return {
-                        to: this.connection.identifier,
-                        type: "text",
-                        content: `Invalid option. Please select from the following options:\n \n ${action.options.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`
-                    }
+                    throw Error(`Invalid option. Please select from the following options:\n \n ${action.options.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`)
                 }
+                throw e;
             }
         }
         //Format the message using the options
         const {options, text} = action;
-        const formattedMessage = `${text}\n\n ${options.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`;
+        const formattedMessage = `${text} \n\n ${options.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`;
         //Set session step as waiting
         await this.updateSession("step", "WAITING");
-        return {
-            content: formattedMessage,
-            type: "text",
-            to: this.connection.identifier
-        }
+        return this.getReplyMessage({
+            type: MessageType.CHAT,
+            text: formattedMessage
+        })
     }
 
     async runWebhookAction(action: Action) {
-        const {webhookURL, params, body, responseDataPath, method, dataKey, headers, nextState,} = action;
+        const sessionData = this.sessionData;
+        const {webhookURL, responseType, params, body, responseDataPath, method, dataKey, headers, nextState,} = action;
         if (!webhookURL) {
             throw Error("Invalid webhook action. Missing url")
         }
+        const sanitizedWebhookURL = this.replaceStringValues(sessionData, webhookURL);
         const paramsObject = params ? JSON.parse(params ?? '') : undefined;
         const headerObject = headers ? JSON.parse(headers ?? '') : undefined;
         const bodyObject = body ? JSON.parse(body ?? '') : undefined;
 
         const axiosInstance = axios.create({
             data: bodyObject,
+            responseType: responseType as ResponseType ?? 'json',
             headers: {
                 "Content-Type": 'application/json',
                 ...(headerObject ?? {}),
@@ -311,12 +334,18 @@ export class FlowEngine {
             params: paramsObject,
         });
         try {
-            const response = method === "POST" ? await axiosInstance.post(webhookURL) : await axiosInstance.get(webhookURL)
+            const response = method === "POST" ? await axiosInstance.post(sanitizedWebhookURL) : await axiosInstance.get(sanitizedWebhookURL)
             if ([200, 304].includes(response.status)) {
                 //set data to data key
                 if (dataKey) {
                     const dataValue = responseDataPath ? get(response.data, responseDataPath) : response.data;
-                    await this.updateSessionData(dataKey, dataValue);
+                    if (responseType === "array-buffer") {
+                        //A file, change it to base64 string so that it plays nice
+                        await this.updateSessionData(dataKey, Buffer.from(dataValue, 'binary').toString('base64'))
+                    } else {
+                        await this.updateSessionData(dataKey, dataValue);
+
+                    }
                     if (nextState) {
                         await this.updateSessionState(nextState);
                     } else {
@@ -332,16 +361,28 @@ export class FlowEngine {
         }
     }
 
+
+    sanitizeMessageFormat(messageFormat: string, text: string): string {
+        const data = {
+            text,
+            ...(this.sessionData ?? {})
+        }
+        return this.replaceStringValues(data, messageFormat);
+    }
+
     async runQuitAction(action: Action): Promise<OutGoingMessage> {
-        const {text} = action;
+        const {text, messageFormat} = action;
         await this.closeSession();
         const sanitizedText = this.sanitizeText(text as string);
+        const sanitizedFormatString = messageFormat ? this.sanitizeMessageFormat(messageFormat, sanitizedText) : undefined
+        const format = sanitizedFormatString ? JSON.parse(sanitizedFormatString) : undefined
 
-        return {
-            content: sanitizedText ?? 'Session done',
-            type: "text",
-            to: this.connection.identifier,
-        }
+        return this.getReplyMessage({
+            type: format?.type ?? MessageType.CHAT,
+            text: format?.text ?? text,
+            image: format?.image,
+            file: format?.file
+        })
     }
 
 
@@ -349,10 +390,20 @@ export class FlowEngine {
         if (this.sessionStep === "WAITING") {
             await this.runAssignAction(action);
         }
+        await this.updateSession("step", "WAITING");
+
+        const sanitizedText = this.sanitizeText(action.text as string);
+
         return {
-            content: action.text as string,
-            type: "text",
-            to: this.connection.identifier
+            to: [
+                {
+                    number: this.connection.identifier
+                },
+            ],
+            message: {
+                type: MessageType.CHAT,
+                text: sanitizedText
+            }
         }
     }
 }

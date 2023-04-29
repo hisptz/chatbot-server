@@ -28,8 +28,13 @@ datasource db {
 //   POST
 // }
 
+// enum actionAPIResponseType {
+//   'array-buffer'
+//   'json'
+// }
+
 model Action {
-  id               String      @id @default(uuid())
+  id               String     @id @default(uuid())
   type             String
   nextState        String?
   text             String?
@@ -37,10 +42,12 @@ model Action {
   dataKey          String?
   functionName     String?
   webhookURL       String?
+  responseType     String?
   responseDataPath String?
   headers          String?
   method           String?
   body             String?
+  messageFormat    String?
   FlowState        FlowState[]
   routes           Route[]
   options          Option[]
