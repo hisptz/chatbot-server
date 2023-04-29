@@ -92,7 +92,9 @@ export class FlowEngine {
             });
 
             if (!flow) {
-                throw Error("Invalid trigger")
+                const flows = await client.flow.findMany();
+                const flowTriggers = flows.map(flow => flow.trigger);
+                throw Error(`Sorry, I could not understand the keyword ${message.message.text}. To start an available service, use any of the following keywords: \n ${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
             }
 
             const rootState = await client.flowState.findUnique({
@@ -131,7 +133,6 @@ export class FlowEngine {
                 include: sessionIncludes
             })
         }
-
         return activeSession;
     }
 
@@ -160,6 +161,7 @@ export class FlowEngine {
         return this;
     }
 
+
     async runAction(): Promise<OutGoingMessage | null> {
         const currentState = cloneDeep(this.currentState);
         const action = currentState.action;
@@ -184,7 +186,7 @@ export class FlowEngine {
             }
         } catch (e: any) {
             // A passable error,
-            //TODO: Should session be cancelled??
+            await this.closeSession()
             return this.getReplyMessage({
                 type: MessageType.CHAT,
                 text: e.message ?? 'Something went wrong.'
