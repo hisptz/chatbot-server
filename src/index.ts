@@ -2,6 +2,8 @@ import {config} from "dotenv";
 import express from "express";
 import message from "./routes/message/routes";
 import flowRoutes from "./routes/flows/routes";
+import helmet from "helmet"
+import RateLimit from "express-rate-limit"
 
 config()
 const port = process.env.PORT || 3000;
@@ -9,6 +11,16 @@ const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
 const app = express();
 
 app.use(express.json());
+app.use(helmet.contentSecurityPolicy({
+    useDefaults: true
+}))
+
+const limiter = RateLimit({
+    windowMs: 60 * 1000,
+    max: 100
+})
+
+app.use(limiter);
 
 app.use(express.urlencoded({extended: true}));
 
