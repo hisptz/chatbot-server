@@ -186,7 +186,7 @@ export class FlowEngine {
             }
         } catch (e: any) {
             // A passable error,
-            await this.closeSession()
+            // await this.closeSession(); //May need further discussions
             return this.getReplyMessage({
                 type: MessageType.CHAT,
                 text: e.message ?? 'Something went wrong.'
