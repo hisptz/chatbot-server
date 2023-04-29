@@ -7,78 +7,98 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 // A question, which is just some text to be sent to the user,
 // and an optional error message if the question is not answered
 // properly
+// enum ActionType {
+//   ROUTER
+//   ASSIGN
+//   FUNCTION
+//   WEBHOOK
+//   MENU
+//   INPUT
+//   QUIT
+// }
 
-model Question {
-  id            String      @id @default(uuid())
-  text          String
-  errorResponse String?
-  TreeState     TreeState[]
-}
+// enum ActionAPICallMethod{
+//   GET
+//   POST
+// }
 
-model Answer {
-  id          String       @id @default(uuid())
-  name        String
-  description String
-  Transition  Transition[]
-}
-
-model Transition {
-  id             String    @id @default(uuid())
-  currentState   TreeState @relation("CurrentState", fields: [currentStateId], references: [id])
-  currentStateId String
-  nextState      TreeState @relation("NextState", fields: [nextStateId], references: [id])
-  nextStateId    String
-  answer         Answer    @relation(fields: [answerId], references: [id])
-  answerId       String
-  name           String
-  Entry          Entry[]
-}
-
-model TreeState {
-  id           String       @id @default(uuid())
-  name         String
-  type         String
-  retries      Int
-  question     Question     @relation(fields: [questionId], references: [id])
-  owningTree   Tree         @relation("OwningTree", fields: [treeId], references: [id])
-  treeId       String
-  questionId   String
-  Tree         Tree[]
-  Session      Session[]
-  CurrentState Transition[] @relation("CurrentState")
-  NextState    Transition[] @relation("NextState")
-}
+// enum actionAPIResponseType {
+//   'array-buffer'
+//   'json'
+// }
 
 model Action {
-  id   String @id @default(uuid())
-  type String
-  Tree Tree[]
+  id               String     @id @default(uuid())
+  type             String
+  nextState        String?
+  text             String?
+  params           String?
+  dataKey          String?
+  functionName     String?
+  webhookURL       String?
+  responseType     String?
+  responseDataPath String?
+  headers          String?
+  method           String?
+  body             String?
+  messageFormat    String?
+  FlowState        FlowState[]
+  routes           Route[]
+  options          Option[]
 }
 
-model Tree {
-  id           String      @id @default(uuid())
-  trigger      String
-  rootState    String
-  completion   Action      @relation(fields: [completionId], references: [id])
-  completionId String
-  Session      Session[]
-  states       TreeState[] @relation("OwningTree")
-  TreeState    TreeState?  @relation(fields: [treeStateId], references: [id])
-  treeStateId  String?
+model Option {
+  id       String @id @default(uuid())
+  text     String
+  action   Action @relation(fields: [actionId], references: [id])
+  actionId String
+}
+
+model Route {
+  id          String  @id @default(uuid())
+  action      Action  @relation(fields: [actionId], references: [id])
+  actionId    String
+  expression  String?
+  nextStateId String
+}
+
+model FlowState {
+  id         String    @id @default(uuid())
+  action     Action    @relation(fields: [actionId], references: [id])
+  actionId   String
+  retries    Int
+  owningFlow Flow      @relation("OwningFlow", fields: [flowId], references: [id])
+  flowId     String
+  Flow       Flow[]
+  Session    Session[]
+}
+
+model Flow {
+  id          String      @id @default(uuid())
+  trigger     String      @unique
+  rootState   String
+  Session     Session[]
+  states      FlowState[] @relation("OwningFlow")
+  FlowState   FlowState?  @relation(fields: [FlowStateId], references: [id])
+  FlowStateId String?
 }
 
 model Connection {
-  id          String    @id @default(uuid())
-  phoneNumber String
-  name        String
-  Session     Session[]
+  id         String    @id @default(uuid())
+  identifier String    @unique
+  Session    Session[]
 }
+
+// enum SessionStateStep {
+//   WAITING
+//   COMPLETED
+// }
 
 model Session {
   id           String     @id @default(uuid())
@@ -86,21 +106,21 @@ model Session {
   startTime    DateTime   @default(now())
   connection   Connection @relation(fields: [connectionId], references: [id])
   connectionId String
-  state        TreeState  @relation(fields: [stateId], references: [id])
+  state        FlowState  @relation(fields: [stateId], references: [id])
   stateId      String
-  tree         Tree       @relation(fields: [treeId], references: [id])
-  treeId       String
+  Flow         Flow       @relation(fields: [FlowId], references: [id])
+  FlowId       String
   tries        Int
   Entry        Entry[]
+  data         String
+  step         String?
 }
 
 model Entry {
-  id           String     @id @default(uuid())
-  time         DateTime   @default(now())
-  text         String
-  sequence     Int
-  transition   Transition @relation(fields: [transitionId], references: [id])
-  transitionId String
-  session      Session    @relation(fields: [sessionId], references: [id])
-  sessionId    String
+  id        String   @id @default(uuid())
+  time      DateTime @default(now())
+  text      String
+  sequence  Int
+  session   Session  @relation(fields: [sessionId], references: [id])
+  sessionId String
 }
