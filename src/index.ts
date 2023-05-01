@@ -4,6 +4,7 @@ import message from "./routes/message/routes";
 import flowRoutes from "./routes/flows/routes";
 import helmet from "helmet"
 import RateLimit from "express-rate-limit"
+import {initPrisma} from "./client";
 
 config()
 const port = process.env.PORT || 3000;
@@ -33,8 +34,12 @@ app.get('/', (req, res) => {
     res.send("Hello, Welcome to the chat-bot!, Some of the routes are /entries");
 })
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
 
-})
+initPrisma().then(() => {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+
+    })
+});
+
 
