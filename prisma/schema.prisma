@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // A question, which is just some text to be sent to the user,
@@ -34,7 +34,7 @@ datasource db {
 // }
 
 model Action {
-  id               String     @id @default(uuid())
+  id               String  @id @default(uuid())
   type             String
   nextState        String?
   text             String?

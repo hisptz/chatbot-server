@@ -4,6 +4,6 @@ example/node_modules
 .env
 
 prisma/dev.db
-prisma/migrations
 app
 build
+/data/
