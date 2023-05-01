@@ -31,15 +31,16 @@ app.use(`${apiMountPoint}/chat`, message);
 app.use(`${apiMountPoint}/flows`, flowRoutes);
 
 app.get('/', (req, res) => {
-    res.send("Hello, Welcome to the chat-bot!, Some of the routes are /entries");
+    res.send("Hello, Welcome to the chat-bot!, Some of the routes are /api/chat /api/flows");
 })
 
 
 initPrisma().then(() => {
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
-
     })
+}).catch((e: any) => {
+    console.error(`Could not initialize database: ${e.message ?? e}`)
 });
 
 
