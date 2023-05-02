@@ -1,8 +1,8 @@
 import {Action, Connection, Entry, FlowState, Option, Route, Session} from "@prisma/client";
-import {IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../interfaces/message";
+import {ContactType, IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../interfaces/message";
 import client from "../client";
 import {DateTime} from "luxon";
-import {cloneDeep, get, reduce, set} from "lodash";
+import {cloneDeep, get, last, reduce, set} from "lodash";
 import axios, {ResponseType} from "axios";
 
 
@@ -285,7 +285,8 @@ export class FlowEngine {
         return {
             to: [
                 {
-                    number: this.connection.identifier
+                    number: this.connection.identifier,
+                    type: this.message?.from?.type as ContactType
                 }
             ],
             message
@@ -341,9 +342,14 @@ export class FlowEngine {
                 //set data to data key
                 if (dataKey) {
                     const dataValue = responseDataPath ? get(response.data, responseDataPath) : response.data;
-                    if (responseType === "array-buffer") {
+                    if (responseType === "arraybuffer") {
                         //A file, change it to base64 string so that it plays nice
-                        await this.updateSessionData(dataKey, Buffer.from(dataValue, 'binary').toString('base64'))
+
+                        //assuming the end of url signifies the image extension;
+                        const extension = last(sanitizedWebhookURL.split('.')) as string;
+                        const validExtension = ['png', 'jpg', 'pdf'].includes(extension) ? extension : 'jpg'
+                        const image = `data:image/${validExtension};base64,${Buffer.from(dataValue, 'binary').toString('base64')}`;
+                        await this.updateSessionData(dataKey, image)
                     } else {
                         await this.updateSessionData(dataKey, dataValue);
 
@@ -399,7 +405,8 @@ export class FlowEngine {
         return {
             to: [
                 {
-                    number: this.connection.identifier
+                    number: this.connection.identifier,
+                    type: this.message?.from?.type as ContactType
                 },
             ],
             message: {

@@ -61,7 +61,7 @@ export const webhookActionSchema = z.object({
     body: z.object({}).optional(),
     dataKey: z.string({description: "Data key to save the answer to "}),
     responseDataPath: z.string({description: 'Data accessor for the response of the api call'}).optional(),
-    responseType: z.enum(['json', 'array-buffer']).optional()
+    responseType: z.enum(['json', 'arraybuffer']).optional()
 
 })
 export const functionActionSchema = z.object({
