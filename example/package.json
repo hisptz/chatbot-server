@@ -1,0 +1,12 @@
+{
+  "name": "chatbot-example",
+  "version": "1.0.0",
+  "description": "An example of how the chatbot can be used by a messaging service",
+  "main": "index.js",
+  "author": "HISP Tanzania",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@wppconnect-team/wppconnect": "^1.23.2"
+  }
+}
