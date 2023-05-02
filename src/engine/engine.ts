@@ -1,14 +1,15 @@
-import {Action, Connection, Entry, FlowState, Option, Route, Session} from "@prisma/client";
+import {Action, Connection, FlowState, Route, Session} from "@prisma/client";
 import {ContactType, IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../interfaces/message";
 import client from "../client";
 import {DateTime} from "luxon";
 import {cloneDeep, get, last, reduce, set} from "lodash";
 import axios, {ResponseType} from "axios";
+import {MenuOption} from "../interfaces/flow";
 
 
 type SessionWithIncludes = Session & {
     connection: Connection,
-    state: FlowState & { action: Action & { options: Option[] } }
+    state: FlowState & { action: Action }
 }
 const sessionIncludes = {
     connection: true,
@@ -17,7 +18,6 @@ const sessionIncludes = {
             action: {
                 include: {
                     routes: true,
-                    options: true
                 }
             }
         }
@@ -27,10 +27,9 @@ const sessionIncludes = {
 export class FlowEngine {
     protected session?: SessionWithIncludes;
     protected message?: IncomingMessage;
-    protected entry?: Entry;
 
-    get currentState(): FlowState & { action: Action & { options: Option[], routes: Route[] } } {
-        return this.session?.state as FlowState & { action: Action & { options: Option[], routes: Route[] } };
+    get currentState(): FlowState & { action: Action & { routes: Route[] } } {
+        return this.session?.state as FlowState & { action: Action & { routes: Route[] } };
     }
 
     get connection(): Connection {
@@ -240,7 +239,7 @@ export class FlowEngine {
     }
 
 
-    getSelectedMenuOption(options: Option[]): string {
+    getSelectedMenuOption(options: MenuOption[]): string {
         const index = Number(this.message?.message?.text);
         let option = null;
         if (isNaN(index)) {
@@ -272,9 +271,10 @@ export class FlowEngine {
 
     }
 
-    async runAssignAction(action: Action & { options: Option[] }) {
+    async runAssignAction(action: Action) {
         const {options, text, dataKey, type} = action;
-        const value = type === "MENU" ? this.getSelectedMenuOption(options) : this.message?.message.text;
+        const sanitizedOptions: MenuOption[] = Array.isArray(JSON.parse(options as string)) ? JSON.parse(options as string) : this.mapOptions(JSON.parse(options as string))
+        const value = type === "MENU" ? this.getSelectedMenuOption(sanitizedOptions) : this.message?.message.text;
         await this.updateSessionData(dataKey as string, value);
         await this.updateSession("step", "COMPLETED");
         await this.updateSessionState(action.nextState as string);
@@ -293,20 +293,32 @@ export class FlowEngine {
         }
     }
 
-    async runMenuAction(action: Action & { options: Option[] }): Promise<OutGoingMessage> {
+
+    mapOptions({dataKey, textKey, idKey}: { dataKey: string, idKey: string; textKey: string }): MenuOption[] {
+        const data = this.sessionData;
+        const rawOptions = get(data, [dataKey]) ?? [];
+        return rawOptions.map((rawOption: Record<string, any>) => ({
+            text: get(rawOption, [textKey]),
+            id: get(rawOption, [idKey])
+        }))
+    }
+
+    async runMenuAction(action: Action): Promise<OutGoingMessage> {
+        const {options, text} = action;
+        const sanitizedOptions: MenuOption[] = Array.isArray(JSON.parse(options as string)) ? JSON.parse(options as string) : this.mapOptions(JSON.parse(options as string))
         if (this.sessionStep === "WAITING") {
             try {
                 await this.runAssignAction(action);
             } catch (e: any) {
                 if (e.message === "Invalid option") {
-                    throw Error(`Invalid option. Please select from the following options:\n \n ${action.options.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`)
+                    throw Error(`Invalid option. Please select from the following options:\n \n ${sanitizedOptions.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`)
                 }
                 throw e;
             }
         }
         //Format the message using the options
-        const {options, text} = action;
-        const formattedMessage = `${text} \n\n ${options.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`;
+
+        const formattedMessage = `${text} \n\n ${sanitizedOptions.map((option, index) => `${index + 1}. ${option.text}`).join("\n")}`;
         //Set session step as waiting
         await this.updateSession("step", "WAITING");
         return this.getReplyMessage({
@@ -387,14 +399,14 @@ export class FlowEngine {
 
         return this.getReplyMessage({
             type: format?.type ?? MessageType.CHAT,
-            text: format?.text ?? text,
+            text: format?.text ?? sanitizedText,
             image: format?.image,
             file: format?.file
         })
     }
 
 
-    async runInputAction(action: Action & { options: Option[] }): Promise<OutGoingMessage> {
+    async runInputAction(action: Action): Promise<OutGoingMessage> {
         if (this.sessionStep === "WAITING") {
             await this.runAssignAction(action);
         }

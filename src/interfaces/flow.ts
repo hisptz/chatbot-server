@@ -48,7 +48,11 @@ export const menuActionSchema = z.object({
     ...genericActionSchema,
     type: z.literal(ActionType.MENU),
     text: z.string({description: "Text to explain the menu"}),
-    options: z.array(menuOptionSchema).optional(),
+    options: z.array(menuOptionSchema).optional().or(z.object({
+        dataKey: z.string({description: "A data key from which options can be obtained. The corresponding data must be an array of object"}),
+        idKey: z.string({description: "A key to access the id of the option"}),
+        textKey: z.string({description: "A key to access the text of the option"})
+    })),
     dataKey: z.string({description: "Data key to save the answer to "})
 })
 export const webhookActionSchema = z.object({
@@ -92,6 +96,7 @@ export const flowSchema = z.object({
     states: z.array(flowStateSchema),
 })
 
+export type MenuOption = z.infer<typeof menuOptionSchema>
 export type FlowData = z.infer<typeof flowSchema>
 export type ActionData = z.infer<typeof actionSchema>
 export type FlowStateData = z.infer<typeof flowStateSchema>

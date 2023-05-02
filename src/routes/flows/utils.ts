@@ -11,7 +11,6 @@ const flowIncludes = {
             action: {
                 include: {
                     routes: true,
-                    options: true
                 }
             }
         }
@@ -108,7 +107,8 @@ export async function createState(stateData: FlowStateData, flowId: string): Pro
             method: actionData.method,
             responseDataPath: actionData.responseDataPath,
             messageFormat: JSON.stringify(actionData.messageFormat),
-            responseType: actionData.responseType
+            responseType: actionData.responseType,
+            options: JSON.stringify(actionData.options)
         }
     })
 
@@ -123,21 +123,6 @@ export async function createState(stateData: FlowStateData, flowId: string): Pro
                     },
                     expression: route.expression,
                     nextStateId: route.nextState
-                }
-            })
-        })
-    }
-    if (!isEmpty(actionData.options)) {
-        await forEachSeries(actionData.options, async (option: any) => {
-            await client.option.create({
-                data: {
-                    action: {
-                        connect: {
-                            id: action.id
-                        }
-                    },
-                    text: option.text,
-                    id: option.id
                 }
             })
         })

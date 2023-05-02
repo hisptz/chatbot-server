@@ -34,7 +34,7 @@ datasource db {
 // }
 
 model Action {
-  id               String  @id @default(uuid())
+  id               String      @id @default(uuid())
   type             String
   nextState        String?
   text             String?
@@ -50,14 +50,7 @@ model Action {
   messageFormat    String?
   FlowState        FlowState[]
   routes           Route[]
-  options          Option[]
-}
-
-model Option {
-  id       String @id @default(uuid())
-  text     String
-  action   Action @relation(fields: [actionId], references: [id])
-  actionId String
+  options          String?
 }
 
 model Route {
