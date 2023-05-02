@@ -19,13 +19,19 @@ router.post('', async (req, res) => {
             const engine = await FlowEngine.init(parsedData.data);
             const message = await engine.runAction();
             res.json(message ?? {
-                to: [parsedData.data.from],
+                to: [{
+                    number: parsedData.data.from.number,
+                    type: parsedData.data.from.type
+                }],
                 message: {type: MessageType.CHAT, text: "Thank you for using our service!"}
             } as OutGoingMessage)
         } catch (e: any) {
-            console.log(e)
+            console.error(e)
             res.json({
-                to: [parsedData.data.from],
+                to: [{
+                    number: parsedData.data.from.number,
+                    type: parsedData.data.from.type
+                }],
                 message: {
                     type: MessageType.CHAT,
                     text: e.message ?? "Something went wrong. Please try again"

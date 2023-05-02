@@ -52,7 +52,8 @@ export const IncomingMessageSchema = z.object({
 export const OutGoingMessageSchema = z.object({
     message: Message,
     to: z.array(z.object({
-        number: z.string()
+        number: z.string(),
+        type: z.nativeEnum(ContactType)
     }))
 })
 
