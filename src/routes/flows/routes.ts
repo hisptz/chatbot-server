@@ -9,7 +9,8 @@ router.get("/", async (req, res) => {
         const flows = await getFlows();
         res.json(flows);
     } catch (e) {
-        res.json(JSON.stringify(e)).status(500)
+        console.error(e)
+        res.status(500).json(JSON.stringify(e))
 
     }
 });
@@ -21,7 +22,8 @@ router.get("/:id", async (req, res) => {
         if (!flow) return res.status(404).json({message: "Flow not found"});
         res.json(flow);
     } catch (e) {
-        res.json(JSON.stringify(e)).status(500)
+        console.error(e)
+        res.status(500).json(JSON.stringify(e)).status(500)
 
     }
 })
@@ -34,7 +36,8 @@ router.delete("/:id", async (req, res) => {
         if (!flow) return res.status(404).json({message: "Flow not found"});
         res.json(flow);
     } catch (e) {
-        res.json(JSON.stringify(e)).status(500)
+        console.error(e)
+        res.status(500).json(JSON.stringify(e))
 
     }
 })
@@ -52,7 +55,8 @@ router.post("/", async (req, res) => {
             res.json(response).status(201);
         }
     } catch (e) {
-        res.json(JSON.stringify(e)).status(500)
+        console.error(e)
+        res.status(500).json(JSON.stringify(e));
     }
 })
 export default router;
