@@ -1,7 +1,7 @@
 {
   "name": "chatbot-server",
   "description": "A minimal implementation of a chat-bot based on decision tree model",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "license": "MIT",
   "devDependencies": {

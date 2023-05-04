@@ -1,8 +1,8 @@
-import {Action, Connection, FlowState, Route, Session} from "@prisma/client";
+import {Action, Connection, Flow, FlowState, Route, Session} from "@prisma/client";
 import {ContactType, IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../interfaces/message";
 import client from "../client";
 import {DateTime} from "luxon";
-import {cloneDeep, get, last, reduce, set} from "lodash";
+import {cloneDeep, get, head, isEmpty, last, reduce, set} from "lodash";
 import axios, {ResponseType} from "axios";
 import {MenuOption} from "../interfaces/flow";
 
@@ -83,18 +83,28 @@ export class FlowEngine {
             include: sessionIncludes
         });
         if (!activeSession) {
-            const flow = await client.flow.findUnique({
+            const flows = await client.flow.findMany({
                 where: {
-                    trigger: message.message.text
+                    trigger: {
+                        contains: message?.message?.text?.toLowerCase(),
+                        mode: 'insensitive'
+                    }
                 },
 
             });
 
-            if (!flow) {
+            if (isEmpty(flows)) {
                 const flows = await client.flow.findMany();
                 const flowTriggers = flows.map(flow => flow.trigger);
                 throw Error(`Sorry, I could not understand the keyword ${message.message.text}. To start an available service, use any of the following keywords: \n ${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
             }
+
+            if (flows.length > 1) {
+                const flowTriggers = flows.map(flow => flow.trigger);
+                throw Error(`More than one service matches the given phrase ${message.message.text}. To start an available service, use any of the following phrases: \n ${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
+            }
+
+            const flow = head(flows) as Flow;
 
             const rootState = await client.flowState.findUnique({
                 where: {
@@ -160,10 +170,21 @@ export class FlowEngine {
         return this;
     }
 
+    async cancelSession() {
+        await this.updateSession("cancelled", true);
+    }
+
 
     async runAction(): Promise<OutGoingMessage | null> {
         const currentState = cloneDeep(this.currentState);
         const action = currentState.action;
+        if (this.message?.message.text?.toLowerCase().match('cancel')) {
+            await this.cancelSession();
+            return this.getReplyMessage({
+                type: MessageType.CHAT,
+                text: 'Session cancelled.'
+            })
+        }
         let message = null;
         try {
             switch (action.type) {
@@ -303,7 +324,7 @@ export class FlowEngine {
         }))
     }
 
-    async runMenuAction(action: Action): Promise<OutGoingMessage> {
+    async runMenuAction(action: Action): Promise<OutGoingMessage | null> {
         const {options, text} = action;
         const sanitizedOptions: MenuOption[] = Array.isArray(JSON.parse(options as string)) ? JSON.parse(options as string) : this.mapOptions(JSON.parse(options as string))
         if (this.sessionStep === "WAITING") {
@@ -315,6 +336,7 @@ export class FlowEngine {
                 }
                 throw e;
             }
+            return null;
         }
         //Format the message using the options
 
@@ -377,6 +399,7 @@ export class FlowEngine {
 
             }
         } catch (e: any) {
+            await this.closeSession();
             throw Error("Error calling webhook. " + e.message)
         }
     }
