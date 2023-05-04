@@ -160,10 +160,21 @@ export class FlowEngine {
         return this;
     }
 
+    async cancelSession() {
+        await this.updateSession("cancelled", true);
+    }
+
 
     async runAction(): Promise<OutGoingMessage | null> {
         const currentState = cloneDeep(this.currentState);
         const action = currentState.action;
+        if (this.message?.message.text?.toLowerCase().match('cancel')) {
+            await this.cancelSession();
+            return this.getReplyMessage({
+                type: MessageType.CHAT,
+                text: 'Session cancelled.'
+            })
+        }
         let message = null;
         try {
             switch (action.type) {
@@ -303,7 +314,7 @@ export class FlowEngine {
         }))
     }
 
-    async runMenuAction(action: Action): Promise<OutGoingMessage> {
+    async runMenuAction(action: Action): Promise<OutGoingMessage | null> {
         const {options, text} = action;
         const sanitizedOptions: MenuOption[] = Array.isArray(JSON.parse(options as string)) ? JSON.parse(options as string) : this.mapOptions(JSON.parse(options as string))
         if (this.sessionStep === "WAITING") {
@@ -315,6 +326,7 @@ export class FlowEngine {
                 }
                 throw e;
             }
+            return null;
         }
         //Format the message using the options
 
@@ -377,6 +389,7 @@ export class FlowEngine {
 
             }
         } catch (e: any) {
+            await this.closeSession();
             throw Error("Error calling webhook. " + e.message)
         }
     }
