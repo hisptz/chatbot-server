@@ -37,7 +37,7 @@ router.delete("/:id", async (req, res) => {
         res.json(flow);
     } catch (e) {
         console.error(e)
-        res.status(500).json(JSON.stringify(e))
+        res.status(409).json(JSON.stringify(e))
 
     }
 })
