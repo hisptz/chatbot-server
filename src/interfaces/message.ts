@@ -45,7 +45,7 @@ export const IncomingMessageSchema = z.object({
         author: z.string().optional(),
         name: z.string().optional()
     }),
-    isForwarded: z.boolean()
+    isForwarded: z.boolean().optional()
 })
 
 

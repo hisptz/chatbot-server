@@ -55,7 +55,7 @@ model Action {
 
 model Route {
   id          String  @id @default(uuid())
-  action      Action  @relation(fields: [actionId], references: [id])
+  action      Action  @relation(fields: [actionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   actionId    String
   expression  String?
   nextStateId String
@@ -63,10 +63,10 @@ model Route {
 
 model FlowState {
   id         String    @id @default(uuid())
-  action     Action    @relation(fields: [actionId], references: [id])
+  action     Action    @relation(fields: [actionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   actionId   String
   retries    Int
-  owningFlow Flow      @relation("OwningFlow", fields: [flowId], references: [id])
+  owningFlow Flow      @relation("OwningFlow", fields: [flowId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   flowId     String
   Flow       Flow[]
   Session    Session[]
@@ -78,7 +78,7 @@ model Flow {
   rootState   String
   Session     Session[]
   states      FlowState[] @relation("OwningFlow")
-  FlowState   FlowState?  @relation(fields: [FlowStateId], references: [id])
+  FlowState   FlowState?  @relation(fields: [FlowStateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   FlowStateId String?
 }
 
@@ -97,11 +97,11 @@ model Session {
   id           String     @id @default(uuid())
   cancelled    Boolean?
   startTime    DateTime   @default(now())
-  connection   Connection @relation(fields: [connectionId], references: [id])
+  connection   Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   connectionId String
-  state        FlowState  @relation(fields: [stateId], references: [id])
+  state        FlowState  @relation(fields: [stateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   stateId      String
-  Flow         Flow       @relation(fields: [FlowId], references: [id])
+  Flow         Flow       @relation(fields: [FlowId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   FlowId       String
   tries        Int
   Entry        Entry[]
@@ -114,6 +114,6 @@ model Entry {
   time      DateTime @default(now())
   text      String
   sequence  Int
-  session   Session  @relation(fields: [sessionId], references: [id])
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   sessionId String
 }

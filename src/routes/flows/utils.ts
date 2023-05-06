@@ -72,22 +72,14 @@ export async function getFlow(id: string): Promise<FlowData> {
         throw Error(`Flow with id ${id} could not be found`)
     }
     return await convertFlowToFlowData(flow);
-
 }
 
-export async function deleteFlow(id: string): Promise<FlowData> {
-    const flow = await client.flow.delete({
-
+export async function deleteFlow(id: string): Promise<any> {
+    return client.flow.delete({
         where: {
             id
         },
-        include: flowIncludes
     });
-    if (!flow) {
-        throw Error(`Flow with id ${id} could not be found`)
-    }
-    return await convertFlowToFlowData(flow);
-
 }
 
 export async function createState(stateData: FlowStateData, flowId: string): Promise<FlowState> {
