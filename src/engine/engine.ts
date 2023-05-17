@@ -91,17 +91,17 @@ export class FlowEngine {
                     }
                 },
 
-            });
+            })
 
             if (isEmpty(flows)) {
                 const flows = await client.flow.findMany();
                 const flowTriggers = flows.map(flow => flow.trigger);
-                throw Error(`Sorry, I could not understand the keyword ${message.message.text}. To start an available service, use any of the following keywords: \n ${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
+                throw Error(`Sorry, I could not understand the keyword ${message.message.text}. To start an available service, use any of the following keywords: \n${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
             }
 
             if (flows.length > 1) {
                 const flowTriggers = flows.map(flow => flow.trigger);
-                throw Error(`More than one service matches the given phrase ${message.message.text}. To start an available service, use any of the following phrases: \n ${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
+                throw Error(`More than one service matches the given phrase ${message.message.text}. To start an available service, use any of the following phrases: \n${flowTriggers.map(trigger => `- ${trigger}\n`)}`)
             }
 
             const flow = head(flows) as Flow;

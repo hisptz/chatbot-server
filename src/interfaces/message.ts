@@ -48,16 +48,19 @@ export const IncomingMessageSchema = z.object({
     isForwarded: z.boolean().optional()
 })
 
+export const ToContactSchema = z.object({
+    number: z.string(),
+    type: z.nativeEnum(ContactType)
+})
+
 
 export const OutGoingMessageSchema = z.object({
     message: Message,
-    to: z.array(z.object({
-        number: z.string(),
-        type: z.nativeEnum(ContactType)
-    }))
+    to: z.array(ToContactSchema)
 })
 
 
 export type IncomingMessage = z.infer<typeof IncomingMessageSchema>;
 export type OutGoingMessage = z.infer<typeof OutGoingMessageSchema>;
 export type MessageConfig = z.infer<typeof Message>
+export type ToContact = z.infer<typeof ToContactSchema>
