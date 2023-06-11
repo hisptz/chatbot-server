@@ -6,11 +6,9 @@ import {ScheduleSchema} from "../../interfaces/schedule";
 
 config();
 
-
 const router = Router();
 
-
-router.post("", async (req, res) => {
+router.post("/", async (req, res) => {
     const data = req.body;
     const parsedData = ScheduleSchema.safeParse(data);
 
@@ -31,7 +29,7 @@ router.post("", async (req, res) => {
     }
 });
 
-router.get("", async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const schedules = await getSchedules();
         res.json(schedules);
@@ -40,7 +38,7 @@ router.get("", async (req, res) => {
         res.status(500).json(JSON.stringify(e));
     }
 })
-router.get(":id", async (req, res) => {
+router.get("/:id", async (req, res) => {
     try {
         const {id} = req.params;
         const schedules = await getSchedule(id);
@@ -55,7 +53,7 @@ router.get(":id", async (req, res) => {
     }
 })
 
-router.delete(":id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     try {
         const {id} = req.params;
         const response = await deleteSchedule(id);

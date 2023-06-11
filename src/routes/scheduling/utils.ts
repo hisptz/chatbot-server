@@ -55,7 +55,7 @@ export async function deleteSchedule(id: string): Promise<Schedule> {
     return formatData(job);
 }
 
-export async function getSchedule(id: string): Promise<Schedule> {
+export async function getSchedule(id: string): Promise<Schedule | undefined> {
     const job = await client.job.findUnique({
         where: {
             id
@@ -66,7 +66,7 @@ export async function getSchedule(id: string): Promise<Schedule> {
     });
 
     if (!job) {
-        throw new Error('Schedule details not found');
+        return;
     }
 
     return formatData(job)
