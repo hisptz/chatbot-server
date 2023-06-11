@@ -136,7 +136,7 @@ model JobStatus {
 }
 
 model Schedule {
-  id      String  @id @default(uuid())
+  id      String  @id @unique @default(uuid())
   enabled Boolean @default(true)
   cron    String
   job     Job     @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)

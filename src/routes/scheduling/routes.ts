@@ -1,6 +1,6 @@
 import {config} from "dotenv";
 import {Router} from "express";
-import {deleteSchedule, getSchedule, getSchedules, saveSchedule} from "./utils";
+import {deleteSchedule, getSchedule, getSchedules, saveSchedule, updateSchedule} from "./utils";
 import {ScheduleSchema} from "../../interfaces/schedule";
 import logger from "../../logging";
 
@@ -48,6 +48,28 @@ router.get("/:id", async (req, res) => {
             return;
         }
         res.json(schedules);
+    } catch (e) {
+        logger.error(e)
+        res.status(500).json(JSON.stringify(e));
+    }
+})
+
+router.put(`/:id`, async (req, res) => {
+    try {
+        const {id} = req.params;
+        const data = req.body;
+        const parsedData = ScheduleSchema.safeParse(data);
+
+        if (!parsedData.success) {
+            res.status(400).send({
+                message: 'Invalid schedule data',
+                errors: parsedData.error.errors
+            });
+            return;
+        }
+        const payload = parsedData.data;
+        const response = await updateSchedule(id, payload);
+        res.json(response);
     } catch (e) {
         logger.error(e)
         res.status(500).json(JSON.stringify(e));

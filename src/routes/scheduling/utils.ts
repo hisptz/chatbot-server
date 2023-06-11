@@ -2,6 +2,7 @@ import {Schedule} from "../../interfaces/schedule";
 import client from "../../client";
 import {asyncify, mapSeries} from "async";
 import {Job} from "@prisma/client";
+import {deleteScheduledJob, scheduleJob} from "../../scheduling/utils";
 
 
 export async function saveSchedule(data: Schedule) {
@@ -38,6 +39,7 @@ export async function saveSchedule(data: Schedule) {
         throw new Error('Schedule details not found');
     }
 
+    await scheduleJob(savedJob)
     return formatData(savedJob);
 
 }
@@ -51,7 +53,7 @@ export async function deleteSchedule(id: string): Promise<Schedule> {
             Schedule: true
         }
     });
-
+    await deleteScheduledJob(job);
     return formatData(job);
 }
 
@@ -72,13 +74,66 @@ export async function getSchedule(id: string): Promise<Schedule | undefined> {
     return formatData(job)
 }
 
+export async function updateSchedule(id: string, data: Schedule): Promise<Schedule> {
+
+    const job = await client.job.update({
+        where: {
+            id
+        },
+        data: {
+            data: JSON.stringify(data.data),
+        },
+        include: {
+            Schedule: true
+        }
+    });
+    await mapSeries(data.schedules, asyncify(async (schedule: any) => {
+        return client.schedule.upsert({
+            select: {
+                id: true,
+            },
+            where: {
+                id: schedule.id,
+            },
+            update: {
+                cron: schedule.cron,
+                enabled: schedule.enabled
+            },
+            create: {
+                job: {
+                    connect: {
+                        id: job.id
+                    }
+                },
+                cron: schedule.cron,
+                enabled: schedule.enabled
+            }
+        });
+    }))
+
+    const savedJob = await client.job.findUnique({
+        where: {
+            id: job.id
+        },
+        include: {
+            Schedule: true
+        }
+    });
+
+    if (!savedJob) {
+        throw new Error('Schedule details not found');
+    }
+    await scheduleJob(savedJob)
+    return formatData(savedJob);
+}
 
 export function formatData(data: Job & { Schedule: any[] }): Schedule {
     return {
         data: JSON.parse(data.data),
         schedules: data.Schedule.map(schedule => ({
             cron: schedule.cron,
-            enabled: schedule.enabled
+            enabled: schedule.enabled,
+            id: schedule.id
         })),
         id: data.id
     }

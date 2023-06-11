@@ -8,12 +8,15 @@ import process from "process";
 import {config} from "dotenv";
 import {getMessage, sendMessage} from "../routes/push/routes";
 import {asyncify, mapSeries} from "async";
+import {compact, remove, set} from "lodash";
 
 config()
 
+
+const scheduledJobs: { id: string, job: CronJob }[] = []
+
 const whatsappURL = process.env.WHATSAPP_URL ?? '';
 const visualizerURL = process.env.VISUALIZER_URL ?? '';
-
 
 export async function pushJob(job: Job) {
     const dateTime = DateTime.now();
@@ -71,10 +74,41 @@ export async function pushJob(job: Job) {
 
 }
 
+export async function deleteScheduledJob(job: Job & { Schedule: Schedule[] }) {
+    const enabledSchedules = job.Schedule.filter(({enabled}) => enabled);
+    for (const schedule of enabledSchedules) {
+        const scheduledJobId = `${job.id}-${schedule.id}`;
+        const alreadyScheduledJob = scheduledJobs.find(({id}) => id === scheduledJobId);
+
+        if (alreadyScheduledJob) {
+            logger.info(`Killing job due to deletion...`);
+            alreadyScheduledJob.job.stop();
+            remove(scheduledJobs, (job) => job.id === scheduledJobId);
+        }
+    }
+}
+
 export async function scheduleJob(job: Job & { Schedule: Schedule[] }) {
     const enabledSchedules = job.Schedule.filter(({enabled}) => enabled);
-
     for (const schedule of enabledSchedules) {
+        const scheduledJobId = `${job.id}-${schedule.id}`;
+
+        const alreadyScheduledJob = compact(scheduledJobs).find(({id}) => id === scheduledJobId);
+
+        if (alreadyScheduledJob) {
+            logger.info(`Killing job to reschedule...`);
+            alreadyScheduledJob.job.stop();
+            const updatedJob = new CronJob(schedule.cron, async () => {
+                logger.info(`Starting job ${job.id} at ${new Date()}`)
+                await pushJob(job);
+            }, () => {
+                logger.info("job finished");
+            }, false)
+            const index = scheduledJobs.findIndex(({id}) => id === scheduledJobId);
+            set(scheduledJobs, index, updatedJob);
+            continue;
+        }
+
         const scheduledJob = new CronJob(schedule.cron, async () => {
             logger.info(`Starting job ${job.id} at ${new Date()}`)
             await pushJob(job);
@@ -82,6 +116,7 @@ export async function scheduleJob(job: Job & { Schedule: Schedule[] }) {
             logger.info("job finished");
         }, false);
         scheduledJob.start();
+        scheduledJobs.push({id: scheduledJobId, job: scheduledJob});
     }
 
 }
