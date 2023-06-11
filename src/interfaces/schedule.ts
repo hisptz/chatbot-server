@@ -6,7 +6,8 @@ export const ScheduleSchema = z.object({
     id: z.string(),
     data: PushRequestSchema,
     schedules: z.array(z.object({
-        cron: z.string()
+        cron: z.string(),
+        enabled: z.boolean()
     }))
 })
 

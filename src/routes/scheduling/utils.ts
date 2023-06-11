@@ -77,7 +77,8 @@ export function formatData(data: Job & { Schedule: any[] }): Schedule {
     return {
         data: JSON.parse(data.data),
         schedules: data.Schedule.map(schedule => ({
-            cron: schedule.cron
+            cron: schedule.cron,
+            enabled: schedule.enabled
         })),
         id: data.id
     }

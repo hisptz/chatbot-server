@@ -8,6 +8,7 @@ import helmet from "helmet"
 import RateLimit from "express-rate-limit"
 import {initPrisma} from "./client";
 import logger from "./logging";
+import {initializeJobScheduling} from "./scheduling";
 
 config()
 const port = process.env.PORT || 3000;
@@ -41,8 +42,15 @@ app.get('/', (req, res) => {
 
 
 initPrisma().then(() => {
-    app.listen(port, () => {
-        logger.info(`Server is running on port ${port}`);
+    initializeJobScheduling().then(() => {
+        app.listen(port, () => {
+            logger.info(`Server is running on port ${port}`);
+        })
+    }).catch((e: any) => {
+        logger.error(`Could not initialize scheduling: ${e.message ?? e}`);
+        app.listen(port, () => {
+            logger.info(`Server is running on port ${port}`);
+        })
     })
 }).catch((e: any) => {
     logger.error(`Could not initialize database: ${e.message ?? e}`)

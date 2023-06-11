@@ -132,11 +132,13 @@ model JobStatus {
   startTime DateTime  @default(now())
   endTime   DateTime?
   status    String
+  response  String?
 }
 
 model Schedule {
-  id    String @id @default(uuid())
-  cron  String
-  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  jobId String
+  id      String  @id @default(uuid())
+  enabled Boolean @default(true)
+  cron    String
+  job     Job     @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobId   String
 }

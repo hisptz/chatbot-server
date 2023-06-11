@@ -26,7 +26,7 @@ async function getImage(visualizationId: string, gateway: string) {
     }
 }
 
-async function sendMessage(message: OutGoingMessage, gateway: string) {
+export async function sendMessage(message: OutGoingMessage, gateway: string) {
 
     try {
         const response = await axios.post(`${gateway.trim()}/send`, message,)
@@ -39,7 +39,7 @@ async function sendMessage(message: OutGoingMessage, gateway: string) {
     }
 }
 
-async function getMessage(vis: { id: string; name: string }, {recipients, description, gateway}: {
+export async function getMessage(vis: { id: string; name: string }, {recipients, description, gateway}: {
     description?: string;
     recipients: ToContact[],
     gateway: string;
