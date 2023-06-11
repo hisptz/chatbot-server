@@ -1,6 +1,7 @@
 import {Router} from "express";
 import {IncomingMessageSchema, MessageType, OutGoingMessage} from "../../interfaces/message";
 import {FlowEngine} from "../../engine/engine";
+import logger from "../../logging";
 
 const router = Router();
 
@@ -26,7 +27,7 @@ router.post('', async (req, res) => {
                 message: {type: MessageType.CHAT, text: "Thank you for using our service!"}
             } as OutGoingMessage)
         } catch (e: any) {
-            console.error(e)
+            logger.error(e)
             res.json({
                 to: [{
                     number: parsedData.data.from.number,

@@ -7,3 +7,4 @@ prisma/dev.db
 app
 build
 /data/
+/logs/
