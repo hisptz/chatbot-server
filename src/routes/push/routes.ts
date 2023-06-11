@@ -5,6 +5,7 @@ import {PushRequestSchema} from "../../interfaces/push";
 import {config} from "dotenv";
 import * as process from "process";
 import {asyncify, mapSeries} from "async";
+import logger from "../../logging";
 
 config();
 
@@ -33,7 +34,7 @@ async function sendMessage(message: OutGoingMessage, gateway: string) {
             return response.data;
         }
     } catch (e: any) {
-        console.error(e)
+        logger.error(e)
         throw Error(`Could not send message: ${e.message}`)
     }
 }

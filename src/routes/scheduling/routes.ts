@@ -2,6 +2,7 @@ import {config} from "dotenv";
 import {Router} from "express";
 import {deleteSchedule, getSchedule, getSchedules, saveSchedule} from "./utils";
 import {ScheduleSchema} from "../../interfaces/schedule";
+import logger from "../../logging";
 
 
 config();
@@ -24,7 +25,7 @@ router.post("/", async (req, res) => {
         const response = await saveSchedule(payload);
         res.json(response).status(201);
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         res.status(500).json(JSON.stringify(e));
     }
 });
@@ -34,7 +35,7 @@ router.get("/", async (req, res) => {
         const schedules = await getSchedules();
         res.json(schedules);
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         res.status(500).json(JSON.stringify(e));
     }
 })
@@ -48,7 +49,7 @@ router.get("/:id", async (req, res) => {
         }
         res.json(schedules);
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         res.status(500).json(JSON.stringify(e));
     }
 })
@@ -59,7 +60,7 @@ router.delete("/:id", async (req, res) => {
         const response = await deleteSchedule(id);
         res.json(response);
     } catch (e) {
-        console.error(e)
+        logger.error(e)
         res.status(500).json(JSON.stringify(e));
     }
 })
