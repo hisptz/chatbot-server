@@ -117,3 +117,26 @@ model Entry {
   session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   sessionId String
 }
+
+model Job {
+  id        String      @id @default(uuid())
+  data      String
+  Schedule  Schedule[]
+  JobStatus JobStatus[]
+}
+
+model JobStatus {
+  id        String    @id @default(uuid())
+  job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobId     String
+  startTime DateTime  @default(now())
+  endTime   DateTime?
+  status    String
+}
+
+model Schedule {
+  id    String @id @default(uuid())
+  cron  String
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobId String
+}
