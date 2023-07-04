@@ -20,7 +20,7 @@
   },
   "scripts": {
     "start": "node app/index.js",
-    "migrate": "npx prisma migrate dev --name init",
+    "migrate": "npx prisma migrate dev",
     "dev": "nodemon -x ts-node src/index.ts --files",
     "build": "tsc -p .",
     "postbuild": "./postbuild.sh"
