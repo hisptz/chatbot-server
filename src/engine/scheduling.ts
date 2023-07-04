@@ -1,0 +1,186 @@
+import {AnalyticsPushJob, AnalyticsPushJobSchedule, Contact, Visualization} from "@prisma/client";
+import {DateTime} from "luxon";
+import {PushRequest} from "../interfaces/push";
+import logger from "../logging";
+import client from "../client";
+import {asyncify, mapSeries} from "async";
+import {getMessage, sendMessage} from "../routes/push/routes";
+import {CronJob} from "cron";
+import process from "process";
+import {config} from "dotenv";
+import {compact, remove, set} from "lodash";
+import {getJobById} from "../modules/jobs/utils";
+
+
+config()
+
+const whatsappURL = process.env.WHATSAPP_URL ?? '';
+const visualizerURL = process.env.VISUALIZER_URL ?? '';
+
+export const scheduledJobs: { id: string, job: CronJob }[] = []
+
+export async function pushJob(job: AnalyticsPushJob & {
+    schedules: AnalyticsPushJobSchedule[],
+    visualizations: Visualization[],
+    contacts: Contact[]
+}) {
+    const dateTime = DateTime.now();
+    const data: PushRequest = {
+        to: job.contacts.map((contact) => ({type: contact.type, number: contact.number})) as any,
+        description: job.description,
+        visualizations: job.visualizations.map((visualization) => ({id: visualization.id, name: visualization.name}))
+    }
+
+    const statusId = `${job.id}-${dateTime.toISO()}`
+    logger.info(`Sending push analytics ${data.visualizations.map(({name}) => name).join(', ')} To contacts ${data.to.map(({number}) => number).join(', ')}`);
+    const jobStatus = await client.analyticsPushJobStatus.create({
+        data: {
+            job: {
+                connect: {
+                    id: job.id
+                }
+            },
+            status: 'STARTED',
+            startTime: dateTime.toJSDate(),
+            id: statusId
+        }
+    });
+    logger.info(`Job status created ${jobStatus.id}`);
+    try {
+        const {visualizations, description, to,} = data;
+        const messages = await mapSeries(visualizations, asyncify(async (visualization: any) => getMessage(visualization, {
+            recipients: to,
+            description,
+            gateway: visualizerURL
+        })));
+
+        const messageResponse = await mapSeries(messages, asyncify(async (message: any) => sendMessage(message, whatsappURL)));
+        logger.info(`Messages sent!`);
+        await client.analyticsPushJobStatus.update({
+            where: {
+                id: statusId
+            },
+            data: {
+                endTime: DateTime.now().toJSDate(),
+                status: 'FINISHED',
+                response: JSON.stringify(messageResponse)
+            }
+        })
+    } catch (e) {
+        logger.error(`Job failed ${e}`);
+        await client.analyticsPushJobStatus.update({
+            where: {
+                id: statusId
+            },
+            data: {
+                endTime: DateTime.now().toJSDate(),
+                status: 'FAILED',
+                response: JSON.stringify(e)
+            }
+        });
+        throw e;
+    }
+
+}
+
+export async function initializeScheduling() {
+    const jobs = await client.analyticsPushJob.findMany({
+        include: {
+            schedules: true,
+            visualizations: true,
+            contacts: true
+        },
+        where: {
+            schedules: {
+                some: {
+                    enabled: true
+                }
+            }
+        }
+    });
+    for (const job of jobs) {
+        await scheduleJob(job);
+    }
+}
+
+export async function scheduleJob(job: AnalyticsPushJob & {
+    schedules: AnalyticsPushJobSchedule[],
+    visualizations: Visualization[],
+    contacts: Contact[]
+}) {
+    const enabledSchedules = job.schedules.filter(({enabled}) => enabled);
+    for (const schedule of enabledSchedules) {
+        const scheduledJobId = `${job.id}-${schedule.id}`;
+        const alreadyScheduledJob = compact(scheduledJobs).find(({id}) => id === scheduledJobId);
+        if (alreadyScheduledJob) {
+            logger.info(`Killing job to reschedule...`);
+            alreadyScheduledJob.job.stop();
+            const updatedJob = new CronJob(schedule.cron, async () => {
+                logger.info(`Starting job ${job.id} at ${new Date()}`)
+                await pushJob(job);
+            }, () => {
+                logger.info("job finished");
+            }, false)
+            const index = scheduledJobs.findIndex(({id}) => id === scheduledJobId);
+            set(scheduledJobs, index, updatedJob);
+            continue;
+        }
+        const scheduledJob = new CronJob(schedule.cron, async () => {
+            logger.info(`Starting job ${job.id} at ${new Date()}`)
+            await pushJob(job);
+        }, () => {
+            logger.info("job finished");
+        }, false);
+        scheduledJob.start();
+        scheduledJobs.push({id: scheduledJobId, job: scheduledJob});
+    }
+
+}
+
+export async function applySchedule(data: AnalyticsPushJobSchedule & { job: AnalyticsPushJob }) {
+    const scheduledJobId = `${data.job.id}-${data.id}`;
+    const isScheduleRunning = !!scheduledJobs.find(({id}) => id === scheduledJobId);
+    const job = await getJobById(data.job.id);
+
+    if (!job) {
+        logger.error(`Job ${data.job.id} not found`);
+        return;
+    }
+
+    if (isScheduleRunning) {
+        logger.info(`Schedule ${data.id} running. Stopping...`);
+        const cronJobIndex = scheduledJobs.findIndex(({id}) => id === scheduledJobId);
+        const cronJob = scheduledJobs[cronJobIndex];
+        cronJob?.job?.stop();
+        if (!data.enabled) {
+            remove(scheduledJobs, (_, index) => cronJobIndex === index);
+            logger.info(`Schedule disabled. Removing from list...`);
+            return;
+        }
+        const updatedJob = new CronJob(data.cron, async () => {
+            logger.info(`Starting job ${data.job.id} at ${new Date()}`)
+            await pushJob(job);
+        }, () => {
+            logger.info("job finished");
+        }, false)
+        updatedJob.start();
+        set(scheduledJobs, cronJobIndex, updatedJob);
+
+        return;
+    } else {
+        if (data.enabled) {
+            const newCronJob = new CronJob(data.cron, async () => {
+                logger.info(`Starting job ${data.job.id} at ${new Date()}`)
+                await pushJob(job);
+            }, () => {
+                logger.info("job finished");
+            }, false);
+            newCronJob.start();
+            scheduledJobs.push({id: scheduledJobId, job: newCronJob});
+        }
+    }
+}
+
+async function applyJobScheduling(data: AnalyticsPushJob) {
+
+}

@@ -126,8 +126,8 @@ model Visualization {
 }
 
 enum ContactType {
-  GROUP
-  INDIVIDUAL
+  group
+  individual
 }
 
 model Contact {

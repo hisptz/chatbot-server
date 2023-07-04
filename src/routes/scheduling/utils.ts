@@ -2,7 +2,7 @@ import {Schedule} from "../../interfaces/schedule";
 import client from "../../client";
 import {asyncify, mapSeries} from "async";
 import {Job} from "@prisma/client";
-import {deleteScheduledJob, scheduleJob} from "../../scheduling/utils";
+import {deleteScheduledJob, scheduleJob} from "../../modules/scheduling/utils";
 
 
 export async function saveSchedule(data: Schedule) {
