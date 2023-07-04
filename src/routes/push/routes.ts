@@ -5,6 +5,7 @@ import {PushRequestSchema} from "../../interfaces/push";
 import {config} from "dotenv";
 import * as process from "process";
 import {asyncify, mapSeries} from "async";
+import logger from "../../logging";
 
 config();
 
@@ -25,7 +26,7 @@ async function getImage(visualizationId: string, gateway: string) {
     }
 }
 
-async function sendMessage(message: OutGoingMessage, gateway: string) {
+export async function sendMessage(message: OutGoingMessage, gateway: string) {
 
     try {
         const response = await axios.post(`${gateway.trim()}/send`, message,)
@@ -33,12 +34,12 @@ async function sendMessage(message: OutGoingMessage, gateway: string) {
             return response.data;
         }
     } catch (e: any) {
-        console.error(e)
+        logger.error(e)
         throw Error(`Could not send message: ${e.message}`)
     }
 }
 
-async function getMessage(vis: { id: string; name: string }, {recipients, description, gateway}: {
+export async function getMessage(vis: { id: string; name: string }, {recipients, description, gateway}: {
     description?: string;
     recipients: ToContact[],
     gateway: string;
