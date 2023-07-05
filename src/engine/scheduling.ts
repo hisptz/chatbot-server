@@ -3,13 +3,13 @@ import {DateTime} from "luxon";
 import {PushRequest} from "../interfaces/push";
 import logger from "../logging";
 import client from "../client";
-import {asyncify, mapSeries} from "async";
-import {getMessage, sendMessage} from "../routes/push/routes";
+import {asyncify, forEach, mapSeries} from "async";
 import {CronJob} from "cron";
 import process from "process";
 import {config} from "dotenv";
 import {compact, remove, set} from "lodash";
 import {getJobById} from "../modules/jobs/utils";
+import {getMessage, sendMessage} from "./push";
 
 
 config()
@@ -56,7 +56,7 @@ export async function pushJob(job: AnalyticsPushJob & {
 
         const messageResponse = await mapSeries(messages, asyncify(async (message: any) => sendMessage(message, whatsappURL)));
         logger.info(`Messages sent!`);
-        await client.analyticsPushJobStatus.update({
+        return await client.analyticsPushJobStatus.update({
             where: {
                 id: statusId
             },
@@ -68,7 +68,7 @@ export async function pushJob(job: AnalyticsPushJob & {
         })
     } catch (e) {
         logger.error(`Job failed ${e}`);
-        await client.analyticsPushJobStatus.update({
+        return client.analyticsPushJobStatus.update({
             where: {
                 id: statusId
             },
@@ -78,29 +78,22 @@ export async function pushJob(job: AnalyticsPushJob & {
                 response: JSON.stringify(e)
             }
         });
-        throw e;
     }
 
 }
 
 export async function initializeScheduling() {
-    const jobs = await client.analyticsPushJob.findMany({
-        include: {
-            schedules: true,
-            visualizations: true,
-            contacts: true
-        },
+    const schedules = await client.analyticsPushJobSchedule.findMany({
         where: {
-            schedules: {
-                some: {
-                    enabled: true
-                }
+            enabled: {
+                equals: true
             }
+        },
+        include: {
+            job: true
         }
     });
-    for (const job of jobs) {
-        await scheduleJob(job);
-    }
+    await forEach(schedules, asyncify(applySchedule))
 }
 
 export async function scheduleJob(job: AnalyticsPushJob & {

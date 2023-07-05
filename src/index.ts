@@ -2,7 +2,6 @@ import {config} from "dotenv";
 import express from "express";
 import message from "./routes/message/routes";
 import flowRoutes from "./routes/flows/routes";
-import pushRoutes from "./routes/push/routes";
 import scheduleRoutes from "./routes/scheduling/routes";
 import helmet from "helmet"
 import RateLimit from "express-rate-limit"
@@ -33,7 +32,6 @@ app.use(express.static("public"));
 
 app.use(`${apiMountPoint}/chat`, message);
 app.use(`${apiMountPoint}/flows`, flowRoutes);
-app.use(`${apiMountPoint}/push`, pushRoutes);
 app.use(`${apiMountPoint}/schedule`, scheduleRoutes);
 
 app.get('/', (req, res) => {
