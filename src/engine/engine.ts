@@ -1,10 +1,10 @@
 import {Action, Connection, Flow, FlowState, Route, Session} from "@prisma/client";
-import {ContactType, IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../interfaces/message";
+import {ContactType, IncomingMessage, MessageConfig, MessageType, OutGoingMessage} from "../schemas/message";
 import client from "../client";
 import {DateTime} from "luxon";
 import {cloneDeep, get, head, isEmpty, last, reduce, set} from "lodash";
 import axios, {ResponseType} from "axios";
-import {MenuOption} from "../interfaces/flow";
+import {MenuOption} from "../schemas/flow";
 
 
 type SessionWithIncludes = Session & {

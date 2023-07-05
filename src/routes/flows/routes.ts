@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {createFlow, deleteFlow, getFlow, getFlows} from "./utils";
-import {flowSchema} from "../../interfaces/flow";
+import {flowSchema} from "../../schemas/flow";
 import logger from "../../logging";
 
 const router = Router();

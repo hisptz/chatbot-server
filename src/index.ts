@@ -2,13 +2,13 @@ import {config} from "dotenv";
 import express from "express";
 import message from "./routes/message/routes";
 import flowRoutes from "./routes/flows/routes";
-import pushRoutes from "./routes/push/routes";
+import jobRoutes from "./routes/jobs/routes";
 import scheduleRoutes from "./routes/scheduling/routes";
 import helmet from "helmet"
 import RateLimit from "express-rate-limit"
 import {initPrisma} from "./client";
 import logger from "./logging";
-import {initializeJobScheduling} from "./scheduling";
+import {initializeScheduling} from "./engine/scheduling";
 
 config()
 const port = process.env.PORT || 3000;
@@ -32,9 +32,9 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 app.use(`${apiMountPoint}/chat`, message);
+app.use(`${apiMountPoint}/jobs`, jobRoutes);
+app.use(`${apiMountPoint}/schedules`, scheduleRoutes)
 app.use(`${apiMountPoint}/flows`, flowRoutes);
-app.use(`${apiMountPoint}/push`, pushRoutes);
-app.use(`${apiMountPoint}/schedule`, scheduleRoutes);
 
 app.get('/', (req, res) => {
     res.send("Hello, Welcome to the chat-bot!, Some of the routes are /api/chat /api/flows");
@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
 
 
 initPrisma().then(() => {
-    initializeJobScheduling().then(() => {
+    initializeScheduling().then(() => {
         app.listen(port, () => {
             logger.info(`Server is running on port ${port}`);
         })
