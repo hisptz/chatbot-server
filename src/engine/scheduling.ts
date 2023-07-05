@@ -1,6 +1,6 @@
 import {AnalyticsPushJob, AnalyticsPushJobSchedule, Contact, Visualization} from "@prisma/client";
 import {DateTime} from "luxon";
-import {PushRequest} from "../interfaces/push";
+import {PushRequest} from "../schemas/push";
 import logger from "../logging";
 import client from "../client";
 import {asyncify, forEach, mapSeries} from "async";
@@ -177,6 +177,17 @@ export async function applySchedule(data: AnalyticsPushJobSchedule & { job: Anal
             newCronJob.start();
             scheduledJobs.push({id: scheduledJobId, job: newCronJob});
         }
+    }
+}
+
+export async function removeSchedule(data: AnalyticsPushJobSchedule & { job: AnalyticsPushJob }) {
+    const scheduledJobId = `${data.job.id}-${data.id}`;
+    const isScheduleRunning = !!scheduledJobs.find(({id}) => id === scheduledJobId);
+    if (!isScheduleRunning) {
+        const cronJobIndex = scheduledJobs.findIndex(({id}) => id === scheduledJobId);
+        const cronJob = scheduledJobs[cronJobIndex];
+        cronJob?.job?.stop();
+        remove(scheduledJobs, (_, index) => cronJobIndex === index);
     }
 }
 

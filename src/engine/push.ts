@@ -1,5 +1,5 @@
 import axios from "axios";
-import {OutGoingMessage, ToContact} from "../interfaces/message";
+import {OutGoingMessage, ToContact} from "../schemas/message";
 import logger from "../logging";
 
 async function getImage(visualizationId: string, gateway: string) {

@@ -1,7 +1,7 @@
 import {Router} from "express";
-import {IncomingMessageSchema, MessageType, OutGoingMessage} from "../../interfaces/message";
 import {FlowEngine} from "../../engine/engine";
 import logger from "../../logging";
+import {IncomingMessageSchema, MessageType, OutGoingMessage} from "../../schemas/message";
 
 const router = Router();
 

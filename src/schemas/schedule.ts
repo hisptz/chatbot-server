@@ -6,7 +6,7 @@ export const ScheduleSchema = z.object({
     id: z.string().optional(),
     job: z.object({
         id: z.string()
-    })
+    }).optional()
 });
 
 

@@ -1,4 +1,4 @@
-import {FlowData, FlowStateData} from "../../interfaces/flow";
+import {FlowData, FlowStateData} from "../../schemas/flow";
 import {Action, Flow, FlowState} from "@prisma/client"
 import client from "../../client";
 import {asyncify, forEachSeries, mapSeries} from "async";

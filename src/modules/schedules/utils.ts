@@ -1,6 +1,6 @@
 import client from "../../client";
-import {Schedule} from "../../interfaces/schedule";
-import {applySchedule} from "../../engine/scheduling";
+import {Schedule} from "../../schemas/schedule";
+import {applySchedule, removeSchedule} from "../../engine/scheduling";
 
 export async function getAllSchedules() {
     return client.analyticsPushJobSchedule.findMany({
@@ -62,4 +62,17 @@ export async function updateSchedule(id: string, data: Schedule) {
     await applySchedule(schedule);
 
     return schedule;
+}
+
+export async function deleteSchedule(id: string) {
+    const deletedSchedule = await client.analyticsPushJobSchedule.delete({
+        where: {
+            id
+        },
+        include: {
+            job: true
+        }
+    })
+    await removeSchedule(deletedSchedule);
+    return deletedSchedule;
 }

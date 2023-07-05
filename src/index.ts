@@ -2,6 +2,7 @@ import {config} from "dotenv";
 import express from "express";
 import message from "./routes/message/routes";
 import flowRoutes from "./routes/flows/routes";
+import jobRoutes from "./routes/jobs/routes";
 import scheduleRoutes from "./routes/scheduling/routes";
 import helmet from "helmet"
 import RateLimit from "express-rate-limit"
@@ -31,6 +32,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 app.use(`${apiMountPoint}/chat`, message);
+app.use(`${apiMountPoint}/jobs`, jobRoutes);
 app.use(`${apiMountPoint}/flows`, flowRoutes);
 app.use(`${apiMountPoint}/schedule`, scheduleRoutes);
 
