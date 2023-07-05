@@ -7,7 +7,7 @@ import {asyncify, forEach, mapSeries} from "async";
 import {CronJob} from "cron";
 import process from "process";
 import {config} from "dotenv";
-import {compact, remove, set} from "lodash";
+import {compact, isEmpty, remove, set} from "lodash";
 import {getJobById} from "../modules/jobs/utils";
 import {getMessage, sendMessage} from "./push";
 
@@ -93,7 +93,13 @@ export async function initializeScheduling() {
             job: true
         }
     });
-    await forEach(schedules, asyncify(applySchedule))
+    if (isEmpty(schedules)) {
+        logger.info(`No enabled schedules found. Skipping schedules set up`);
+        return;
+    }
+    logger.info(`Setting up ${schedules.length} schedules...`);
+    await forEach(schedules, asyncify(applySchedule));
+    logger.info(`Schedules set up!`);
 }
 
 export async function scheduleJob(job: AnalyticsPushJob & {

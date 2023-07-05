@@ -1,4 +1,4 @@
-import axios from "axios/index";
+import axios from "axios";
 import {OutGoingMessage, ToContact} from "../interfaces/message";
 import logger from "../logging";
 
