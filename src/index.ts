@@ -33,8 +33,8 @@ app.use(express.static("public"));
 
 app.use(`${apiMountPoint}/chat`, message);
 app.use(`${apiMountPoint}/jobs`, jobRoutes);
+app.use(`${apiMountPoint}/schedules`, scheduleRoutes)
 app.use(`${apiMountPoint}/flows`, flowRoutes);
-app.use(`${apiMountPoint}/schedule`, scheduleRoutes);
 
 app.get('/', (req, res) => {
     res.send("Hello, Welcome to the chat-bot!, Some of the routes are /api/chat /api/flows");

@@ -27,7 +27,7 @@ export async function createSchedule(data: Schedule) {
             ...data,
             job: {
                 connect: {
-                    id: data.job.id
+                    id: data?.job?.id
                 }
             },
         },
@@ -50,7 +50,7 @@ export async function updateSchedule(id: string, data: Schedule) {
             ...data,
             job: {
                 connect: {
-                    id: data.job.id
+                    id: data?.job?.id
                 }
             }
         },
