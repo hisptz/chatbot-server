@@ -13,20 +13,20 @@ datasource db {
 // A question, which is just some text to be sent to the user,
 // and an optional error message if the question is not answered
 // properly
-// enum ActionType {
-//   ROUTER
-//   ASSIGN
-//   FUNCTION
-//   WEBHOOK
-//   MENU
-//   INPUT
-//   QUIT
-// }
+enum ActionType {
+  ROUTER
+  ASSIGN
+  FUNCTION
+  WEBHOOK
+  MENU
+  INPUT
+  QUIT
+}
 
-// enum ActionAPICallMethod{
-//   GET
-//   POST
-// }
+enum ActionAPICallMethod {
+  GET
+  POST
+}
 
 // enum actionAPIResponseType {
 //   'array-buffer'
@@ -34,8 +34,8 @@ datasource db {
 // }
 
 model Action {
-  id               String      @id @default(uuid())
-  type             String
+  id               String               @id @default(uuid())
+  type             ActionType
   nextState        String?
   text             String?
   params           String?
@@ -45,7 +45,7 @@ model Action {
   responseType     String?
   responseDataPath String?
   headers          String?
-  method           String?
+  method           ActionAPICallMethod?
   body             String?
   messageFormat    String?
   FlowState        FlowState[]
@@ -88,25 +88,25 @@ model Connection {
   Session    Session[]
 }
 
-// enum SessionStateStep {
-//   WAITING
-//   COMPLETED
-// }
+enum SessionStateStep {
+  WAITING
+  COMPLETED
+}
 
 model Session {
-  id           String     @id @default(uuid())
+  id           String            @id @default(uuid())
   cancelled    Boolean?
-  startTime    DateTime   @default(now())
-  connection   Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  startTime    DateTime          @default(now())
+  connection   Connection        @relation(fields: [connectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   connectionId String
-  state        FlowState  @relation(fields: [stateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  state        FlowState         @relation(fields: [stateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   stateId      String
-  Flow         Flow       @relation(fields: [FlowId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Flow         Flow              @relation(fields: [FlowId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   FlowId       String
   tries        Int
   Entry        Entry[]
   data         String
-  step         String?
+  step         SessionStateStep?
 }
 
 model Entry {
@@ -118,27 +118,48 @@ model Entry {
   sessionId String
 }
 
-model Job {
-  id        String      @id @default(uuid())
-  data      String
-  Schedule  Schedule[]
-  JobStatus JobStatus[]
+model Visualization {
+  id    String             @id @unique
+  name  String
+  jobId String
+  jobs  AnalyticsPushJob[]
 }
 
-model JobStatus {
-  id        String    @id @default(uuid())
-  job       Job       @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+enum ContactType {
+  group
+  individual
+}
+
+model Contact {
+  id     String             @id @unique @default(uuid())
+  type   ContactType
+  number String
+  jobs   AnalyticsPushJob[]
+}
+
+model AnalyticsPushJob {
+  id             String                     @id @default(uuid())
+  contacts       Contact[]
+  description    String
+  schedules      AnalyticsPushJobSchedule[]
+  statuses       AnalyticsPushJobStatus[]
+  visualizations Visualization[]
+}
+
+model AnalyticsPushJobStatus {
+  id        String           @id @default(uuid())
+  job       AnalyticsPushJob @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   jobId     String
-  startTime DateTime  @default(now())
+  startTime DateTime         @default(now())
   endTime   DateTime?
   status    String
   response  String?
 }
 
-model Schedule {
-  id      String  @id @unique @default(uuid())
-  enabled Boolean @default(true)
+model AnalyticsPushJobSchedule {
+  id      String           @id @unique @default(uuid())
+  enabled Boolean          @default(true)
   cron    String
-  job     Job     @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  job     AnalyticsPushJob @relation(fields: [jobId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   jobId   String
 }
