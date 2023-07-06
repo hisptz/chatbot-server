@@ -3,8 +3,8 @@ import logger from "../../../logging";
 import {IncomingMessageSchema, MessageType, OutGoingMessage} from "../../../schemas/message";
 import {Operation} from "express-openapi";
 
-
-const POST: Operation = [
+export const parameters = []
+export const POST: Operation = [
     async (req, res) => {
         const data = req.body;
 
@@ -44,25 +44,44 @@ const POST: Operation = [
     }
 ]
 
-
 POST.apiDoc = {
+    operationId: "sendMessage",
     summary: "Send a message to the bot to start or continue a conversation (session)",
     description: "Sends a message to the bot. If the sending number has an active session, the message will continue the conversation. If not, the message will trigger a new flow if the message matches any of the keywords",
     tags: [
-        "messages",
-        "flow",
-        "bot"
+        "chat"
     ],
     requestBody: {
-        summary: "Message to send",
-        description: "Message to send",
-        content: {},
+        description: "The message to send to the bot",
         required: true,
-        $ref: "#/definitions/Message"
+        content: {
+            ["application/json"]: {
+                schema: {
+                    $ref: "#/components/schemas/incomingMessage"
+                }
+            }
+        }
     },
     responses: {
-        default: {
-            $ref: "#/definitions/Message"
+        '200': {
+            description: "A reply to the sent message. It can be a menu, an error, or a final message to the user",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/outgoingMessage"
+                    }
+                }
+            }
+        },
+        '400': {
+            description: "An object showing the errors in the sent payload",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/zodError"
+                    }
+                }
+            }
         }
     }
 }

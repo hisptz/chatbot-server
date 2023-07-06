@@ -6,7 +6,7 @@ import {flowSchema, flowStateSchema} from "../schemas/flow";
 import {JobSchema} from "../schemas/job";
 import {ScheduleSchema} from "../schemas/schedule";
 import {version} from "../../package.json";
-
+import {z} from "zod"
 
 config()
 
@@ -26,7 +26,27 @@ const apiDoc: OpenAPIObject = {
             flow: generateSchema(flowSchema),
             flowState: generateSchema(flowStateSchema),
             job: generateSchema(JobSchema),
-            schedule: generateSchema(ScheduleSchema)
+            schedule: generateSchema(ScheduleSchema),
+            schedules: generateSchema(z.array(ScheduleSchema)),
+            zodError: generateSchema(z.array(z.object({
+                code: z.string(),
+                message: z.string(),
+                received: z.string(),
+                path: z.array(z.string())
+            }))),
+            error: generateSchema(z.object({
+                message: z.string()
+            }))
+        },
+        requestBodies: {
+            incomingMessage: {
+                $ref: "#/components/schemas/incomingMessage"
+            }
+        },
+        responses: {
+            outgoingMessage: {
+                $ref: "#/components/schemas/outgoingMessage"
+            }
         }
     },
     servers: [

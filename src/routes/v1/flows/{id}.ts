@@ -29,7 +29,7 @@ export const GET: Operation = [
 GET.apiDoc = {
     description: 'Get a flow using the ID',
     operationId: 'getFlow',
-    tags: ['flow'],
+    tags: ['flows'],
     parameters: [],
     responses: {
         default: {
@@ -56,7 +56,7 @@ export const DELETE: Operation = [
 DELETE.apiDoc = {
     summary: "Delete a flow",
     operationId: "deleteFlow",
-    tags: ["flow"],
+    tags: ["flows"],
     parameters: [],
     responses: {
         default: {
