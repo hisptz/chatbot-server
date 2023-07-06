@@ -11,6 +11,7 @@ import {z} from "zod"
 config()
 
 const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
+const baseURL = process.env.BASE_URL || "http://localhost:3000";
 
 const apiDoc: OpenAPIObject = {
     openapi: "3.1.0",
@@ -42,21 +43,11 @@ const apiDoc: OpenAPIObject = {
             error: generateSchema(z.object({
                 message: z.string()
             }))
-        },
-        requestBodies: {
-            incomingMessage: {
-                $ref: "#/components/schemas/incomingMessage"
-            }
-        },
-        responses: {
-            outgoingMessage: {
-                $ref: "#/components/schemas/outgoingMessage"
-            }
         }
     },
     servers: [
         {
-            url: `${apiMountPoint}`
+            url: `${baseURL}${apiMountPoint}`
         }
     ],
     paths: {}
