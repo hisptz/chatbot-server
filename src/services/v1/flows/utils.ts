@@ -1,9 +1,8 @@
-import {FlowData, FlowStateData} from "../../schemas/flow";
+import {FlowData, FlowStateData} from "../../../schemas/flow";
 import {Action, Flow, FlowState} from "@prisma/client"
-import client from "../../client";
 import {asyncify, forEachSeries, mapSeries} from "async";
 import {isEmpty} from "lodash";
-
+import client from "../../../client";
 
 const flowIncludes = {
     states: {
@@ -16,7 +15,6 @@ const flowIncludes = {
         }
     }
 }
-
 export async function convertFlowStateToFlowStateData(flowState: FlowState & {
     action: Action
 }): Promise<FlowStateData> {
@@ -42,10 +40,8 @@ export async function convertFlowStateToFlowStateData(flowState: FlowState & {
 
     } as FlowStateData
 }
-
 export async function convertFlowToFlowData(flow: Flow & { states: FlowState[] }): Promise<FlowData> {
     const states = await mapSeries(flow.states, asyncify(convertFlowStateToFlowStateData)) as FlowStateData[];
-
     return {
         initialState: flow.rootState,
         ...flow,
@@ -53,14 +49,12 @@ export async function convertFlowToFlowData(flow: Flow & { states: FlowState[] }
     }
 
 }
-
 export async function getFlows(): Promise<FlowData[]> {
     const flows = await client.flow.findMany({
         include: flowIncludes
     });
     return await mapSeries(flows, asyncify(convertFlowToFlowData)) as FlowData[];
 }
-
 export async function getFlow(id: string): Promise<FlowData> {
     const flow = await client.flow.findUnique({
         where: {
@@ -73,7 +67,6 @@ export async function getFlow(id: string): Promise<FlowData> {
     }
     return await convertFlowToFlowData(flow);
 }
-
 export async function deleteFlow(id: string): Promise<any> {
     return client.flow.delete({
         where: {
@@ -81,7 +74,6 @@ export async function deleteFlow(id: string): Promise<any> {
         },
     });
 }
-
 export async function createState(stateData: FlowStateData, flowId: string): Promise<FlowState> {
     const {id} = stateData ?? {}
     const actionData: any = stateData.action;
@@ -137,7 +129,6 @@ export async function createState(stateData: FlowStateData, flowId: string): Pro
         }
     })
 }
-
 export async function createFlow(flowData: FlowData): Promise<FlowData> {
     const {states: statesData, initialState, trigger, id,} = flowData ?? {}
     await client.flow.create({

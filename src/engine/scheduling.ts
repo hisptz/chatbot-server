@@ -8,8 +8,8 @@ import {CronJob} from "cron";
 import process from "process";
 import {config} from "dotenv";
 import {compact, isEmpty, remove, set} from "lodash";
-import {getJobById} from "../modules/jobs/utils";
 import {getMessage, sendMessage} from "./push";
+import {getJobById} from "../services/v1/jobs";
 
 
 config()
