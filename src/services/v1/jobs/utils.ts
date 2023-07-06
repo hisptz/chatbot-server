@@ -1,8 +1,8 @@
-import client from "../../client";
+import client from "../../../client";
 import {config} from "dotenv";
-import {AnalyticsPushJobAPI} from "../../schemas/job";
-import logger from "../../logging";
-import {removeSchedule, scheduleJob} from "../../engine/scheduling";
+import {AnalyticsPushJobAPI} from "../../../schemas/job";
+import logger from "../../../logging";
+import {removeSchedule, scheduleJob} from "../../../engine/scheduling";
 import {asyncify, forEach} from "async";
 
 config()

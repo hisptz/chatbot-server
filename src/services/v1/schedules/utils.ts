@@ -1,6 +1,6 @@
-import client from "../../client";
-import {Schedule} from "../../schemas/schedule";
-import {applySchedule, removeSchedule} from "../../engine/scheduling";
+import client from "../../../client";
+import {Schedule} from "../../../schemas/schedule";
+import {applySchedule, removeSchedule} from "../../../engine/scheduling";
 
 export async function getAllSchedules() {
     return client.analyticsPushJobSchedule.findMany({
