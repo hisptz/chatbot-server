@@ -3,7 +3,7 @@ import {OpenAPIObject} from "openapi3-ts/oas31";
 import {generateSchema} from "@anatine/zod-openapi";
 import {IncomingMessageSchema, OutGoingMessageSchema} from "../schemas/message";
 import {flowSchema, flowStateSchema} from "../schemas/flow";
-import {JobSchema} from "../schemas/job";
+import {JobSchema, JobStatusSchema} from "../schemas/job";
 import {ScheduleSchema} from "../schemas/schedule";
 import {version} from "../../package.json";
 import {z} from "zod"
@@ -24,8 +24,13 @@ const apiDoc: OpenAPIObject = {
             incomingMessage: generateSchema(IncomingMessageSchema),
             outgoingMessage: generateSchema(OutGoingMessageSchema),
             flow: generateSchema(flowSchema),
+            flows: generateSchema(z.array(flowSchema)),
             flowState: generateSchema(flowStateSchema),
+            flowStates: generateSchema(z.array(flowStateSchema)),
             job: generateSchema(JobSchema),
+            jobs: generateSchema(z.array(JobSchema)),
+            jobStatus: generateSchema(JobStatusSchema),
+            jobStatuses: generateSchema(z.array(JobStatusSchema)),
             schedule: generateSchema(ScheduleSchema),
             schedules: generateSchema(z.array(ScheduleSchema)),
             zodError: generateSchema(z.array(z.object({

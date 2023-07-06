@@ -16,8 +16,15 @@ GET.apiDoc = {
     operationId: "getJobs",
     tags: ["jobs"],
     responses: {
-        default: {
-            description: "Success"
+        "200": {
+            description: "List of jobs",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/jobs"
+                    }
+                }
+            }
         }
     }
 }
@@ -49,8 +56,16 @@ POST.apiDoc = {
     operationId: "createJob",
     tags: ["jobs"],
     responses: {
-        default: {
-            description: "Success"
-        }
+        "201": {
+            description: "The created job",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/job"
+                    }
+                }
+            }
+        },
+
     }
 }

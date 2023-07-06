@@ -30,10 +30,20 @@ GET.apiDoc = {
     description: 'Get a flow using the ID',
     operationId: 'getFlow',
     tags: ['flows'],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
+        "200": {
+            description: "The flow that has the specified id",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/flow"
+                    }
+                }
+            }
+        },
+        "404": {
+            description: "Flow not found"
         }
     }
 }
@@ -57,10 +67,20 @@ DELETE.apiDoc = {
     summary: "Delete a flow",
     operationId: "deleteFlow",
     tags: ["flows"],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
+        "200": {
+            description: "The deleted flow",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/flow"
+                    }
+                }
+            }
+        },
+        "404": {
+            description: "Flow not found"
         }
     }
 }

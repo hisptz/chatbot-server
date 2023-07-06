@@ -1,12 +1,12 @@
 import {Operation} from "express-openapi";
 import {getJobStatus} from "../../../../services/v1/jobs";
 
-export const parameters = {
+export const parameters = [{
     in: "path",
     name: "id",
     required: true,
-    type: "string"
-}
+    description: "Job id"
+}]
 
 export const GET: Operation = [
     async (req, res) => {
@@ -20,15 +20,25 @@ export const GET: Operation = [
     }
 ]
 
-
 GET.apiDoc = {
     description: "Get job status",
+    summary: "Get job status",
     operationId: "getJobStatus",
     tags: ["jobs"],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
+        "200": {
+            description: "Job statuses for job with the specified id",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/jobStatuses"
+                    }
+                }
+            }
+        },
+        "400": {
+            description: "Missing job id"
         }
     }
 }

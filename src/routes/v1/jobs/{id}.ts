@@ -3,12 +3,12 @@ import {deleteJob, getJobById, updateJob} from "../../../services/v1/jobs";
 import {JobSchema} from "../../../schemas/job";
 
 
-export const parameters = {
+export const parameters = [{
     in: "path",
     name: "id",
     required: true,
-    type: "string"
-}
+    description: "Job id"
+}]
 
 export const GET: Operation = [
     async (req, res) => {
@@ -27,11 +27,24 @@ export const GET: Operation = [
 GET.apiDoc = {
     summary: "Get a job",
     tags: ["jobs"],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
-        }
+        "200": {
+            description: "The requested job",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/job"
+                    }
+                }
+            }
+        },
+        "404": {
+            description: "Job not found"
+        },
+        "400": {
+            description: "Missing job id"
+        },
     }
 }
 export const PUT: Operation = [
@@ -62,11 +75,24 @@ export const PUT: Operation = [
 PUT.apiDoc = {
     summary: "Update a job",
     tags: ["jobs"],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
-        }
+        "202": {
+            description: "The updated job",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/job"
+                    }
+                }
+            }
+        },
+        "400": {
+            description: "Missing job id"
+        },
+        "404": {
+            description: "Job not found"
+        },
     }
 }
 export const DELETE: Operation = [
@@ -90,10 +116,23 @@ export const DELETE: Operation = [
 DELETE.apiDoc = {
     summary: "Delete a job",
     tags: ["jobs"],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
-        }
+        "200": {
+            description: "The deleted job",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/job"
+                    }
+                }
+            }
+        },
+        "404": {
+            description: "Job not found"
+        },
+        "400": {
+            description: "Missing job id"
+        },
     }
 }

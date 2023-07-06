@@ -2,12 +2,13 @@ import {Operation} from "express-openapi";
 import {getJobById} from "../../../../services/v1/jobs";
 import {pushJob} from "../../../../engine/scheduling";
 
-export const parameters = {
+export const parameters = [{
     in: "path",
     name: "id",
     required: true,
-    type: "string"
-}
+    description: "Job id"
+
+}]
 
 export const GET: Operation = [
     async (req, res) => {
@@ -25,13 +26,19 @@ export const GET: Operation = [
 ]
 
 GET.apiDoc = {
-    description: "Push a job to the queue",
+    description: "Manually run a job",
+    summary: "Manually run a job",
     operationId: "pushJob",
     tags: ["jobs"],
-    parameters: [],
+    parameters,
     responses: {
-        default: {
-            description: "Success"
+        "200": {
+            description: "Job run successfully",
+            content: {
+                ["application/json"]: {
+                    schema: {$ref: "#/components/schemas/jobStatus"}
+                }
+            }
         }
     }
 }

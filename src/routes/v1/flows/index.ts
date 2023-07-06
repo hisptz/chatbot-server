@@ -21,8 +21,15 @@ GET.apiDoc = {
     description: "Get flows",
     tags: ["flows"],
     responses: {
-        default: {
-            description: "Success"
+        "200": {
+            description: "Flows",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/flows"
+                    }
+                }
+            }
         }
     }
 }
@@ -52,8 +59,15 @@ POST.apiDoc = {
     description: "Create flow",
     tags: ["flows"],
     responses: {
-        default: {
-            description: "Success"
+        "201": {
+            description: "The created flow",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/flow"
+                    }
+                }
+            }
         }
     }
 }
