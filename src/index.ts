@@ -9,14 +9,16 @@ import {initialize} from "express-openapi";
 import apiDoc from "./docs";
 import * as path from "path";
 import swagger from "swagger-ui-express"
+import {apiKeyAuth} from "@vpriem/express-api-key-auth";
 
 config()
 const port = process.env.PORT || 3000;
 const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
 const app = express();
 
-
 app.use(express.json());
+
+app.use(apiKeyAuth(/^API_KEY_/));
 app.use(helmet.contentSecurityPolicy({
     useDefaults: true
 }))
