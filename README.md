@@ -18,7 +18,6 @@ the `.env.example` file to `.env` and change the required environment variables.
 - `PORT`: The port where the server should run on.
 - `API_MOUNT_POINT`: The endpoint on which the server API will be accessible
 - `API_KEY_ADMIN`: An API key that every request must set in the header as `x-api-key`
-- `CORS_WHITELIST`: A list of whitelisted urls separated by comma e.g `http://dev.hisptz.com,http://dhis2.org`
 
 ### Using node
 
