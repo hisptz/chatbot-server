@@ -95,6 +95,7 @@ PUT.apiDoc = {
         },
     }
 }
+
 export const DELETE: Operation = [
     async (req, res) => {
         const {id} = req.params;
@@ -134,5 +135,23 @@ DELETE.apiDoc = {
         "400": {
             description: "Missing job id"
         },
+    }
+}
+
+
+export const OPTION: Operation = [
+    async (req, res) => {
+        res.status(200).send();
+    }
+]
+
+OPTION.apiDoc = {
+    summary: "Option",
+    tags: ["jobs"],
+    parameters,
+    responses: {
+        "200": {
+            description: "Options is supported",
+        }
     }
 }

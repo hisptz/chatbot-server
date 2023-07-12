@@ -1,4 +1,4 @@
-FROM node:lts-slim
+FROM node:lts-bullseye-slim
 LABEL authors="HISP Tanzania"
 
 WORKDIR /chat-bot
@@ -12,4 +12,4 @@ RUN yarn install --production
 
 EXPOSE 3000
 
-ENTRYPOINT ["node", "app/index.js"]
+ENTRYPOINT ["node", "app/src/index.js"]

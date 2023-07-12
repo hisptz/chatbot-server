@@ -1,5 +1,5 @@
 {
-  "name": "chatbot-server",
+  "name": "hisptz-chatbot-server",
   "description": "A minimal implementation of a chat-bot based on decision tree model",
   "version": "1.0.5",
   "private": true,
@@ -23,8 +23,8 @@
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "start": "node app/index.js",
-    "migrate": "npx prisma migrate dev",
+    "start": "node app/src/index.js",
+    "migrate": "npx prisma migrate dev --name init",
     "dev": "nodemon -x ts-node-esm src/index.ts --files",
     "build": "tsc -p .",
     "postbuild": "./postbuild.sh"

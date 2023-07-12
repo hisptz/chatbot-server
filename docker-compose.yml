@@ -11,33 +11,11 @@ services:
       - "5432:5432"
     env_file:
       - .env
-    networks:
-      - chat-bot
   chat-bot:
-    image: hisptz-chatbot:1.0.0
-    build:
-      context: .
+    image: hisptanzania/chat-bot:latest
     env_file:
       - .env
     ports:
       - "3000:3000"
     depends_on:
       - db
-    networks:
-      - chat-bot
-
-#  pgadmin:
-#    image: dpage/pgadmin4:latest
-#    container_name: pgadmin
-#    volumes:
-#      - /pgadmin:/var/lib/pgadmin
-#    env_file:
-#      - .env
-#    ports:
-#      - "5433:3000"
-#    networks:
-#      - chat-bot
-
-networks:
-  chat-bot:
-    external: true

@@ -42,3 +42,10 @@ GET.apiDoc = {
         }
     }
 }
+
+
+export const OPTION: Operation = [
+    async (req, res) => {
+        res.status(200).send();
+    }
+]

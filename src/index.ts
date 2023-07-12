@@ -39,21 +39,22 @@ app.get('/', (req, res) => {
     res.send("Hello, Welcome to the chat-bot!, Some of the routes are /api/chat /api/flows");
 })
 
-initialize({
-    app,
-    apiDoc,
-    routesGlob: '**/*.{ts,js}',
-    paths: path.resolve(__dirname, "routes/v1"),
-    routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
-    exposeApiDocs: true,
-    docsPath: `/openapi`,
-}).then(() => {
-    app.use(`${apiMountPoint}/docs/ui`, swagger.serve, swagger.setup({}, {
-        swaggerOptions: {
-            url: `${apiMountPoint}/openapi`
-        }
-    }))
-    initPrisma().then(() => {
+
+initPrisma().then(() => {
+    initialize({
+        app,
+        apiDoc,
+        routesGlob: '**/*.{ts,js}',
+        paths: path.resolve(__dirname, "routes/v1"),
+        routesIndexFileRegExp: /(?:index)?\.[tj]s$/,
+        exposeApiDocs: true,
+        docsPath: `/openapi`,
+    }).then(() => {
+        app.use(`${apiMountPoint}/docs/ui`, swagger.serve, swagger.setup({}, {
+            swaggerOptions: {
+                url: `${apiMountPoint}/openapi`
+            }
+        }))
         initializeScheduling().then(() => {
             app.listen(port, () => {
                 logger.info(`Server is running on port ${port}`);
@@ -65,9 +66,11 @@ initialize({
             })
         })
     }).catch((e: any) => {
-        logger.error(`Could not initialize database: ${e.message ?? e}`)
+        logger.error(`Could not initialize api: ${e.message ?? e}`);
     });
-})
+}).catch((e: any) => {
+    logger.error(`Could not initialize database: ${e.message ?? e}`)
+});
 
 
 
