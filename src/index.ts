@@ -10,18 +10,14 @@ import apiDoc from "./docs";
 import * as path from "path";
 import swagger from "swagger-ui-express"
 import {apiKeyAuth} from "@vpriem/express-api-key-auth";
-import cors from "cors";
 
 config()
 const port = process.env.PORT || 3000;
 const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
-const corsWhitelist = process.env.CORS_WHITELIST?.split(",") || [];
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-    origin: corsWhitelist
-}))
+
 app.use(apiKeyAuth(/^API_KEY_/));
 app.use(helmet.contentSecurityPolicy({
     useDefaults: true
@@ -39,7 +35,6 @@ app.get('/', (req, res) => {
     res.send("Hello, Welcome to the chat-bot!, Some of the routes are /api/chat /api/flows");
 })
 
-
 initPrisma().then(() => {
     initialize({
         app,
@@ -50,7 +45,10 @@ initPrisma().then(() => {
         exposeApiDocs: true,
         docsPath: `/openapi`,
     }).then(() => {
-        app.use(`${apiMountPoint}/docs/ui`, swagger.serve, swagger.setup({}, {
+        app.get('/', (req, res) => {
+            res.send(`Hello, Welcome to the chat-bot server!, Navigate to ${apiMountPoint}/docs to view documentation on usage `);
+        })
+        app.use(`${apiMountPoint}/docs`, swagger.serve, swagger.setup({}, {
             swaggerOptions: {
                 url: `${apiMountPoint}/openapi`
             }

@@ -10,7 +10,7 @@ export const parameters = [{
 
 }]
 
-export const GET: Operation = [
+export const POST: Operation = [
     async (req, res) => {
         const {id} = req.params;
         const job = await getJobById(id);
@@ -24,8 +24,7 @@ export const GET: Operation = [
         }
     }
 ]
-
-GET.apiDoc = {
+POST.apiDoc = {
     description: "Manually run a job",
     summary: "Manually run a job",
     operationId: "pushJob",
@@ -42,10 +41,3 @@ GET.apiDoc = {
         }
     }
 }
-
-
-export const OPTION: Operation = [
-    async (req, res) => {
-        res.status(200).send();
-    }
-]
