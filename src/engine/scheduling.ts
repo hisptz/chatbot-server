@@ -199,11 +199,13 @@ export async function applySchedule(data: AnalyticsPushJobSchedule & { job: Anal
 export async function removeSchedule(data: AnalyticsPushJobSchedule & { job: AnalyticsPushJob }) {
     const scheduledJobId = `${data.job.id}-${data.id}`;
     const isScheduleRunning = !!scheduledJobs.find(({id}) => id === scheduledJobId);
-    if (!isScheduleRunning) {
+    if (isScheduleRunning) {
+        logger.info(`Removing schedule ${data.id}...`);
         const cronJobIndex = scheduledJobs.findIndex(({id}) => id === scheduledJobId);
         const cronJob = scheduledJobs[cronJobIndex];
         cronJob?.job?.stop();
         remove(scheduledJobs, (_, index) => cronJobIndex === index);
+        logger.info(`${data.id} removed`);
     }
 }
 

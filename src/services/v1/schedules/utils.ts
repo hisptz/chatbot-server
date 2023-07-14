@@ -60,7 +60,6 @@ export async function updateSchedule(id: string, data: Schedule) {
     });
 
     await applySchedule(schedule);
-
     return schedule;
 }
 
