@@ -10,12 +10,28 @@ import {config} from "dotenv";
 import {compact, isEmpty, remove, set} from "lodash";
 import {getMessage, sendMessage} from "./push";
 import {getJobById} from "../services/v1/jobs";
+import axios from "axios";
 
 
 config()
 
 const whatsappURL = process.env.WHATSAPP_URL ?? '';
+const whatsappAPIKey = process.env.WHATSAPP_API_KEY ?? "";
 const visualizerURL = process.env.VISUALIZER_URL ?? '';
+const visualizerAPIKey = process.env.VISUALIZER_API_KEY ?? '';
+
+const whatsappClient = axios.create({
+    baseURL: whatsappURL,
+    headers: {
+        'x-api-key': whatsappAPIKey
+    }
+})
+const visualizerClient = axios.create({
+    baseURL: visualizerURL,
+    headers: {
+        'x-api-key': visualizerAPIKey
+    }
+});
 
 export const scheduledJobs: { id: string, job: CronJob }[] = []
 
@@ -51,12 +67,12 @@ export async function pushJob(job: AnalyticsPushJob & {
         const messages = await mapSeries(visualizations, asyncify(async (visualization: any) => getMessage(visualization, {
             recipients: to,
             description,
-            gateway: visualizerURL
+            visualizerClient
         })));
 
-        const messageResponse = await mapSeries(messages, asyncify(async (message: any) => sendMessage(message, whatsappURL)));
+        const messageResponse = await mapSeries(messages, asyncify(async (message: any) => sendMessage(message, whatsappClient)));
         logger.info(`Messages sent!`);
-        return await client.analyticsPushJobStatus.update({
+        return client.analyticsPushJobStatus.update({
             where: {
                 id: statusId
             },

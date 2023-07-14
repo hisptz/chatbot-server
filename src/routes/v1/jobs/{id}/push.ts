@@ -19,6 +19,7 @@ export const POST: Operation = [
             if (response.status === "FAILED") {
                 res.status(500).json(response);
             }
+            res.json(response);
         } else {
             res.status(404).send("Job not found");
         }
