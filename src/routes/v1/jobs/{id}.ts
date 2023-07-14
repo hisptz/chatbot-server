@@ -9,7 +9,6 @@ export const parameters = [{
     required: true,
     description: "Job id"
 }]
-
 export const GET: Operation = [
     async (req, res) => {
         const {id} = req.params
@@ -62,6 +61,11 @@ export const PUT: Operation = [
         }
         const job = parsedData.data;
         try {
+            const jobExists = !!(await getJobById(id));
+            if (!jobExists) {
+                res.status(404).send("Job not found");
+                return;
+            }
             const response = await updateJob(id, job);
             res.json(response);
         } catch (e) {
@@ -104,6 +108,11 @@ export const DELETE: Operation = [
             return;
         }
         try {
+            const jobExists = !!(await getJobById(id));
+            if (!jobExists) {
+                res.status(404).send("Job not found");
+                return;
+            }
             const response = await deleteJob(id);
             res.json(response);
         } catch (e) {
@@ -135,23 +144,5 @@ DELETE.apiDoc = {
         "400": {
             description: "Missing job id"
         },
-    }
-}
-
-
-export const OPTION: Operation = [
-    async (req, res) => {
-        res.status(200).send();
-    }
-]
-
-OPTION.apiDoc = {
-    summary: "Option",
-    tags: ["jobs"],
-    parameters,
-    responses: {
-        "200": {
-            description: "Options is supported",
-        }
     }
 }

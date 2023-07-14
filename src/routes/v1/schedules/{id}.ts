@@ -54,6 +54,11 @@ export const PUT: Operation = [
             return res.status(400).json(parsedData.error);
         }
         try {
+            const scheduleExists = !!(await getSchedule(id));
+            if (!scheduleExists) {
+                res.status(404).send("Schedule not found");
+                return;
+            }
             const createdSchedule = await updateSchedule(id, parsedData.data);
             res.status(202).json(createdSchedule);
         } catch (e) {
@@ -106,6 +111,11 @@ export const DELETE: Operation = [
             return res.status(400).send("id is required");
         }
         try {
+            const scheduleExists = !!(await getSchedule(id));
+            if (!scheduleExists) {
+                res.status(404).send("Schedule not found");
+                return;
+            }
             const response = await deleteSchedule(id);
             res.status(200).json(response);
         } catch (e: any) {
