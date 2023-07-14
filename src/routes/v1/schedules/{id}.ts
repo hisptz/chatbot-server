@@ -107,7 +107,7 @@ export const DELETE: Operation = [
         }
         try {
             const response = await deleteSchedule(id);
-            res.status(201).json(response);
+            res.status(200).json(response);
         } catch (e: any) {
             res.status(500).send(e.message);
         }
@@ -125,6 +125,16 @@ DELETE.apiDoc = {
                 ["application/json"]: {
                     schema: {
                         $ref: "#/components/schemas/schedule"
+                    }
+                }
+            }
+        },
+        "404": {
+            description: "Schedule not found",
+            content: {
+                ["application/json"]: {
+                    schema: {
+                        $ref: "#/components/schemas/error"
                     }
                 }
             }

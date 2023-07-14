@@ -38,7 +38,6 @@ export const POST: Operation = [
             return;
         }
         const job = parsedData.data;
-
         try {
             const response = await createJob(job);
             res.json(response);
