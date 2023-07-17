@@ -2,10 +2,13 @@ import {PrismaClient} from '@prisma/client'
 import ChildProcess from "child_process";
 import logger from "../logging";
 import {config} from "dotenv";
+import {sanitizeEnv} from "../utils/env";
 
 const prisma = new PrismaClient();
 
-config()
+config();
+sanitizeEnv();
+
 
 export default prisma;
 

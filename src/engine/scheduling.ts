@@ -11,9 +11,12 @@ import {compact, isEmpty, remove, set} from "lodash";
 import {getMessage, sendMessage} from "./push";
 import {getJobById} from "../services/v1/jobs";
 import axios from "axios";
+import {sanitizeEnv} from "../utils/env";
 
 
-config()
+config();
+sanitizeEnv();
+
 
 const whatsappURL = process.env.WHATSAPP_URL ?? '';
 const whatsappAPIKey = process.env.WHATSAPP_API_KEY ?? "";

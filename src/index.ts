@@ -10,8 +10,10 @@ import apiDoc from "./docs";
 import * as path from "path";
 import swagger from "swagger-ui-express"
 import {apiKeyAuth} from "@vpriem/express-api-key-auth";
+import {sanitizeEnv} from "./utils/env";
 
 config()
+sanitizeEnv();
 const port = process.env.PORT || 3000;
 const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
 const app = express();

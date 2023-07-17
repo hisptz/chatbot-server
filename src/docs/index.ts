@@ -7,8 +7,11 @@ import {JobSchema, JobStatusSchema} from "../schemas/job";
 import {ScheduleSchema} from "../schemas/schedule";
 import {version} from "../../package.json";
 import {z} from "zod"
+import {sanitizeEnv} from "../utils/env";
 
-config()
+config();
+sanitizeEnv();
+
 
 const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
