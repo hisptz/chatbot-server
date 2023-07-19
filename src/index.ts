@@ -16,11 +16,16 @@ config()
 sanitizeEnv();
 const port = process.env.PORT || 3000;
 const apiMountPoint = process.env.API_MOUNT_POINT || "/api";
+const apiKey = process.env.API_KEY
+
 const app = express();
 
+if(apiKey){
+    app.use(apiKeyAuth(/^API_KEY_/));
+}
 app.use(express.json());
 
-app.use(apiKeyAuth(/^API_KEY_/));
+
 app.use(helmet.contentSecurityPolicy({
     useDefaults: true
 }))
