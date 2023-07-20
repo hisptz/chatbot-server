@@ -1,6 +1,5 @@
 {
   "name": "hisptz-chatbot-server",
-  "type": "module",
   "description": "A minimal implementation of a chat-bot based on decision tree model",
   "version": "1.0.7",
   "private": true,
