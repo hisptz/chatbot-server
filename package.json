@@ -22,6 +22,9 @@
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6"
   },
+  "prisma": {
+    "seed": "ts-node src/client/seed.ts"
+  },
   "scripts": {
     "start": "node app/src/index.js",
     "migrate": "npx prisma migrate dev --name init",

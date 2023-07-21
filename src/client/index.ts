@@ -3,6 +3,7 @@ import ChildProcess from "child_process";
 import logger from "../logging";
 import {config} from "dotenv";
 import {sanitizeEnv} from "../utils/env";
+import {seedDefaultFlow} from "./seed";
 
 const prisma = new PrismaClient();
 
@@ -24,12 +25,17 @@ export async function initPrisma() {
             logger.error(error.stack);
             reject(error)
         })
-        process.on("exit", (code, signal) => {
+        process.on("exit", (code) => {
             if (code !== 0) {
                 logger.error(`Exit with code ${code}`)
                 reject(code)
-            } else
-                resolve(code)
+            } else {
+                logger.info(`Database setup complete`);
+                seedDefaultFlow().then(() => resolve(code)).catch((error) => reject(error))
+            }
         })
     })
 }
+
+
+
