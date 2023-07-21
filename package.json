@@ -1,7 +1,7 @@
 {
   "name": "hisptz-chatbot-server",
   "description": "A minimal implementation of a chat-bot based on decision tree model",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "license": "MIT",
   "devDependencies": {
