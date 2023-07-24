@@ -10,8 +10,9 @@ async function getImage(visualizationId: string, client: AxiosInstance) {
         if (response.status === 200) {
             return response.data?.image;
         }
-    } catch (e) {
-
+    } catch (e: any) {
+        logger.error(e);
+        logger.error(JSON.stringify(e.data));
     }
 }
 
@@ -24,7 +25,8 @@ export async function sendMessage(message: OutGoingMessage, client: AxiosInstanc
             return response.data;
         }
     } catch (e: any) {
-        logger.error(e)
+        logger.error(e);
+        logger.error(JSON.stringify(e.data));
         throw Error(`Could not send message: ${e.message}`)
     }
 }
@@ -46,3 +48,4 @@ export async function getMessage(vis: { id: string; name: string }, {recipients,
         } as OutGoingMessage
     }
 }
+

@@ -12,16 +12,21 @@ export const parameters = [{
 
 export const POST: Operation = [
     async (req, res) => {
-        const {id} = req.params;
-        const job = await getJobById(id);
-        if (job) {
+        try {
+            const {id} = req.params;
+            const job = await getJobById(id);
+            if (!job) {
+                res.status(404).send("Job not found");
+                return;
+            }
             const response = await pushJob(job);
             if (response.status === "FAILED") {
                 res.status(500).json(response);
+                return;
             }
             res.json(response);
-        } else {
-            res.status(404).send("Job not found");
+        } catch (e: any) {
+            res.status(500).send(e.message);
         }
     }
 ]
