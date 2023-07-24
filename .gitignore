@@ -9,3 +9,4 @@ build
 /data/
 /logs/
 /.postman.json
+/*.postman_collection.json
