@@ -10,3 +10,4 @@ build
 /logs/
 /.postman.json
 /*.postman_collection.json
+/.postman.env.json
