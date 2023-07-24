@@ -1,0 +1,83 @@
+[
+  {
+    "id": "2bcc74ee-702a-4b28-a040-9fa82c24cb51",
+    "name": "The deleted flow",
+    "originalRequest": {
+      "method": "DELETE",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/flows/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "flows",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"id\": \"<string>\",\n  \"trigger\": \"<string>\",\n  \"initialState\": \"<string>\",\n  \"states\": [\n    {\n      \"id\": \"<string>\",\n      \"action\": {\n        \"type\": \"<string>\",\n        \"nextState\": \"<string>\",\n        \"text\": \"<string>\",\n        \"dataKey\": \"<string>\",\n        \"options\": [\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          },\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          }\n        ]\n      }\n    },\n    {\n      \"id\": \"<string>\",\n      \"action\": {\n        \"type\": \"<string>\",\n        \"nextState\": \"<string>\",\n        \"text\": \"<string>\",\n        \"dataKey\": \"<string>\",\n        \"options\": [\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          },\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+    "uid": "27134508-2bcc74ee-702a-4b28-a040-9fa82c24cb51"
+  },
+  {
+    "id": "0bf9a88a-0b09-4c22-aa0b-fd42e4ba4245",
+    "name": "Flow not found",
+    "originalRequest": {
+      "method": "DELETE",
+      "header": [],
+      "url": {
+        "raw": "{{baseUrl}}/flows/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "flows",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "Not Found",
+    "code": 404,
+    "_postman_previewlanguage": "text",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "text/plain"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "",
+    "uid": "27134508-0bf9a88a-0b09-4c22-aa0b-fd42e4ba4245"
+  }
+]

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "723bd81b-9779-4cf1-bcf8-6cb69c59fcf6",
+    "name": "The flow that has the specified id",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/flows/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "flows",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"id\": \"<string>\",\n  \"trigger\": \"<string>\",\n  \"initialState\": \"<string>\",\n  \"states\": [\n    {\n      \"id\": \"<string>\",\n      \"action\": {\n        \"type\": \"<string>\",\n        \"nextState\": \"<string>\",\n        \"text\": \"<string>\",\n        \"dataKey\": \"<string>\",\n        \"options\": [\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          },\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          }\n        ]\n      }\n    },\n    {\n      \"id\": \"<string>\",\n      \"action\": {\n        \"type\": \"<string>\",\n        \"nextState\": \"<string>\",\n        \"text\": \"<string>\",\n        \"dataKey\": \"<string>\",\n        \"options\": [\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          },\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+    "uid": "27134508-723bd81b-9779-4cf1-bcf8-6cb69c59fcf6"
+  },
+  {
+    "id": "260f8eff-ca50-4e99-ba3a-3d13d06df3cd",
+    "name": "Flow not found",
+    "originalRequest": {
+      "method": "GET",
+      "header": [],
+      "url": {
+        "raw": "{{baseUrl}}/flows/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "flows",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "Not Found",
+    "code": 404,
+    "_postman_previewlanguage": "text",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "text/plain"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "",
+    "uid": "27134508-260f8eff-ca50-4e99-ba3a-3d13d06df3cd"
+  }
+]

@@ -8,3 +8,4 @@ app
 build
 /data/
 /logs/
+/.postman.json

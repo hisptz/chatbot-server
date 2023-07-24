@@ -1,0 +1,25 @@
+{
+  "method": "DELETE",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/schedules/:id",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "schedules",
+      ":id"
+    ],
+    "variable": [
+      {
+        "key": "id",
+        "value": "{{scheduleId}}"
+      }
+    ]
+  }
+}

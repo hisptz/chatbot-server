@@ -1,0 +1,28 @@
+{
+  "method": "GET",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/flows/:id",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "flows",
+      ":id"
+    ],
+    "variable": [
+      {
+        "id": "5b6da5f1-ae68-4211-9641-f3b6d684997d",
+        "key": "id",
+        "value": "",
+        "description": "(Required) "
+      }
+    ]
+  },
+  "description": "Get a flow using the ID"
+}

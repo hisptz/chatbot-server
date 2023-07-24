@@ -1,0 +1,28 @@
+{
+  "method": "POST",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/jobs/:id/push",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "jobs",
+      ":id",
+      "push"
+    ],
+    "variable": [
+      {
+        "key": "id",
+        "value": "{{jobId}}",
+        "description": "(Required) Job id"
+      }
+    ]
+  },
+  "description": "Manually run a job"
+}

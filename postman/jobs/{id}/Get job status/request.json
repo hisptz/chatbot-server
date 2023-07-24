@@ -1,0 +1,28 @@
+{
+  "method": "GET",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/jobs/:id/statuses",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "jobs",
+      ":id",
+      "statuses"
+    ],
+    "variable": [
+      {
+        "key": "id",
+        "value": "{{jobId}}",
+        "description": "(Required) Job id"
+      }
+    ]
+  },
+  "description": "Get job status"
+}

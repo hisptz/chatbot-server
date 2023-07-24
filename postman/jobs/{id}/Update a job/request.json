@@ -1,0 +1,35 @@
+{
+  "method": "PUT",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n    \"id\": \"{{jobId}}\",\n    \"description\": \"Test RMNCAH - Edited\",\n    \"visualizations\": [\n        {\n            \"id\": \"JjZZ09UxARX\",\n            \"name\": \"RMNCAH - Trends in coverage of interventions for maternal and newborn (%) - Edited\",\n            \"jobId\": \"zG8ZkcUeCAi\"\n        }\n    ],\n    \"contacts\": [\n        {\n            \"id\": \"KuD6NyRwhcI\",\n            \"type\": \"individual\",\n            \"number\": \"255712626160\"\n        }\n    ],\n    \"schedules\": [\n        {\n            \"id\": \"DdziYDcPH3R\",\n            \"enabled\": true,\n            \"cron\": \"*/10 * * * *\",\n            \"jobId\": \"999e8e3f-4edb-4789-b1d5-065826c41c91\"\n        }\n    ],\n    \"statuses\": [\n       \n    ]\n}",
+    "options": {
+      "raw": {
+        "language": "json"
+      }
+    }
+  },
+  "url": {
+    "raw": "{{baseUrl}}/jobs/:id",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "jobs",
+      ":id"
+    ],
+    "variable": [
+      {
+        "key": "id",
+        "value": "{{jobId}}",
+        "description": "(Required) Job id"
+      }
+    ]
+  }
+}

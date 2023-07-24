@@ -1,0 +1,106 @@
+[
+  {
+    "id": "be02f5f8-b54d-4af2-b1f2-2486a18f7495",
+    "name": "An updated schedule",
+    "originalRequest": {
+      "method": "PUT",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "{\n  \"cron\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"id\": \"<string>\",\n  \"job\": {\n    \"id\": \"<string>\"\n  }\n}",
+        "options": {
+          "raw": {
+            "language": "json"
+          }
+        }
+      },
+      "url": {
+        "raw": "{{baseUrl}}/schedules/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "schedules",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"cron\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"id\": \"<string>\",\n  \"job\": {\n    \"id\": \"<string>\"\n  }\n}",
+    "uid": "27134508-be02f5f8-b54d-4af2-b1f2-2486a18f7495"
+  },
+  {
+    "id": "c481c660-200e-4fed-9702-7e82dd4c0280",
+    "name": "Schedule not found",
+    "originalRequest": {
+      "method": "PUT",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "{\n  \"cron\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"id\": \"<string>\",\n  \"job\": {\n    \"id\": \"<string>\"\n  }\n}",
+        "options": {
+          "raw": {
+            "language": "json"
+          }
+        }
+      },
+      "url": {
+        "raw": "{{baseUrl}}/schedules/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "schedules",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "Not Found",
+    "code": 404,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"message\": \"<string>\"\n}",
+    "uid": "27134508-c481c660-200e-4fed-9702-7e82dd4c0280"
+  }
+]

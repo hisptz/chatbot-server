@@ -1,0 +1,38 @@
+[
+  {
+    "id": "2d6dcfe4-981f-4435-a2a1-6f0af528d93b",
+    "name": "The created job",
+    "originalRequest": {
+      "method": "POST",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ""
+        ]
+      }
+    },
+    "status": "Created",
+    "code": 201,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"id\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contacts\": [\n    {\n      \"id\": \"<string>\",\n      \"number\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"number\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ],\n  \"visualizations\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"schedules\": [\n    {\n      \"cron\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"id\": \"<string>\",\n      \"job\": {\n        \"id\": \"<string>\"\n      }\n    },\n    {\n      \"cron\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"id\": \"<string>\",\n      \"job\": {\n        \"id\": \"<string>\"\n      }\n    }\n  ]\n}",
+    "uid": "27134508-2d6dcfe4-981f-4435-a2a1-6f0af528d93b"
+  }
+]

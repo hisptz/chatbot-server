@@ -1,0 +1,92 @@
+[
+  {
+    "id": "d45a28de-ef62-4781-b1c7-6168d444babe",
+    "name": "A reply to the sent message. It can be a menu, an error, or a final message to the user",
+    "originalRequest": {
+      "method": "POST",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "{\n  \"message\": {\n    \"type\": \"<string>\",\n    \"text\": \"<string>\"\n  },\n  \"from\": {\n    \"type\": \"<string>\",\n    \"number\": \"<string>\",\n    \"author\": \"<string>\",\n    \"name\": \"<string>\"\n  },\n  \"isForwarded\": \"<boolean>\"\n}",
+        "options": {
+          "raw": {
+            "language": "json"
+          }
+        }
+      },
+      "url": {
+        "raw": "{{baseUrl}}/chat/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "chat",
+          ""
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"message\": {\n    \"type\": \"<string>\",\n    \"text\": \"<string>\"\n  },\n  \"to\": [\n    {\n      \"number\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"number\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ]\n}",
+    "uid": "27134508-d45a28de-ef62-4781-b1c7-6168d444babe"
+  },
+  {
+    "id": "65cb3454-5270-4111-b6e2-0a4aee6a9e40",
+    "name": "An object showing the errors in the sent payload",
+    "originalRequest": {
+      "method": "POST",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "{\n  \"message\": {\n    \"type\": \"<string>\",\n    \"text\": \"<string>\"\n  },\n  \"from\": {\n    \"type\": \"<string>\",\n    \"number\": \"<string>\",\n    \"author\": \"<string>\",\n    \"name\": \"<string>\"\n  },\n  \"isForwarded\": \"<boolean>\"\n}",
+        "options": {
+          "raw": {
+            "language": "json"
+          }
+        }
+      },
+      "url": {
+        "raw": "{{baseUrl}}/chat/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "chat",
+          ""
+        ]
+      }
+    },
+    "status": "Bad Request",
+    "code": 400,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "[\n  {\n    \"code\": \"<string>\",\n    \"message\": \"<string>\",\n    \"received\": \"<string>\",\n    \"path\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  },\n  {\n    \"code\": \"<string>\",\n    \"message\": \"<string>\",\n    \"received\": \"<string>\",\n    \"path\": [\n      \"<string>\",\n      \"<string>\"\n    ]\n  }\n]",
+    "uid": "27134508-65cb3454-5270-4111-b6e2-0a4aee6a9e40"
+  }
+]

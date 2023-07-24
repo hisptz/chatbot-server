@@ -1,0 +1,38 @@
+[
+  {
+    "id": "0af0e51e-684b-4195-b546-1d7cc095074c",
+    "name": "Returns all schedules",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/schedules/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "schedules",
+          ""
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "[\n  {\n    \"cron\": \"<string>\",\n    \"enabled\": \"<boolean>\",\n    \"id\": \"<string>\",\n    \"job\": {\n      \"id\": \"<string>\"\n    }\n  },\n  {\n    \"cron\": \"<string>\",\n    \"enabled\": \"<boolean>\",\n    \"id\": \"<string>\",\n    \"job\": {\n      \"id\": \"<string>\"\n    }\n  }\n]",
+    "uid": "27134508-0af0e51e-684b-4195-b546-1d7cc095074c"
+  }
+]

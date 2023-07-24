@@ -1,0 +1,26 @@
+{
+  "method": "DELETE",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/jobs/:id",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "jobs",
+      ":id"
+    ],
+    "variable": [
+      {
+        "key": "id",
+        "value": "{{jobId}}",
+        "description": "(Required) Job id"
+      }
+    ]
+  }
+}

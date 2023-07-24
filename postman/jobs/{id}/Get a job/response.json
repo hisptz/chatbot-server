@@ -1,0 +1,121 @@
+[
+  {
+    "id": "c7d76859-33ca-4378-b8a1-7ded583988eb",
+    "name": "The requested job",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) Job id"
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"id\": \"<string>\",\n  \"description\": \"<string>\",\n  \"contacts\": [\n    {\n      \"id\": \"<string>\",\n      \"number\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"number\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ],\n  \"visualizations\": [\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\"\n    },\n    {\n      \"id\": \"<string>\",\n      \"name\": \"<string>\"\n    }\n  ],\n  \"schedules\": [\n    {\n      \"cron\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"id\": \"<string>\",\n      \"job\": {\n        \"id\": \"<string>\"\n      }\n    },\n    {\n      \"cron\": \"<string>\",\n      \"enabled\": \"<boolean>\",\n      \"id\": \"<string>\",\n      \"job\": {\n        \"id\": \"<string>\"\n      }\n    }\n  ]\n}",
+    "uid": "27134508-c7d76859-33ca-4378-b8a1-7ded583988eb"
+  },
+  {
+    "id": "b882fd72-4125-4b37-84c0-df9c2ad689d2",
+    "name": "Missing job id",
+    "originalRequest": {
+      "method": "GET",
+      "header": [],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) Job id"
+          }
+        ]
+      }
+    },
+    "status": "Bad Request",
+    "code": 400,
+    "_postman_previewlanguage": "text",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "text/plain"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "",
+    "uid": "27134508-b882fd72-4125-4b37-84c0-df9c2ad689d2"
+  },
+  {
+    "id": "277b4331-1660-4f16-bbab-bcd373f7f919",
+    "name": "Job not found",
+    "originalRequest": {
+      "method": "GET",
+      "header": [],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) Job id"
+          }
+        ]
+      }
+    },
+    "status": "Not Found",
+    "code": 404,
+    "_postman_previewlanguage": "text",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "text/plain"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "",
+    "uid": "27134508-277b4331-1660-4f16-bbab-bcd373f7f919"
+  }
+]

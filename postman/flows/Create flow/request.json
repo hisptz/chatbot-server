@@ -1,0 +1,29 @@
+{
+  "method": "POST",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n    \"id\": \"{{$randomUUID}}\",\n    \"trigger\": \"Hello DHIS2 Test\",\n    \"initialState\": \"b12ffbf3\",\n    \"states\": [\n        {\n            \"id\": \"b12ffbf3\",\n            \"action\": {\n                \"type\": \"WEBHOOK\",\n                \"url\": \"http://mediator:3000/api/dataStore/hisptz-analytics-groups?fields=id,name\",\n                \"responseDataPath\": \"entries\",\n                \"dataKey\": \"groups\",\n                \"method\": \"GET\",\n                \"nextState\": \"dc381521\"\n            }\n        },\n        {\n            \"id\": \"dc381521\",\n            \"action\": {\n                \"type\": \"MENU\",\n                \"dataKey\": \"groupId\",\n                \"text\": \"Hello, welcome to DHIS2 analytics service. Kindly select the group of visualization you want to view\",\n                \"options\": {\n                    \"dataKey\": \"groups\",\n                    \"textKey\": \"name\",\n                    \"idKey\":\"key\"\n                },\n                \"nextState\": \"7f6902aa\"\n            }\n        },\n        {\n            \"id\": \"7f6902aa\",\n            \"action\": {\n                \"type\": \"WEBHOOK\",\n                \"url\": \"http://mediator:3000/api/dataStore/hisptz-analytics-groups/{groupId}\",\n                \"responseDataPath\": \"visualizations\",\n                \"dataKey\": \"visualizations\",\n                \"method\": \"GET\",\n                \"nextState\": \"53f023bb\"\n            }\n        },\n         {\n            \"id\": \"53f023bb\",\n            \"action\": {\n                \"type\": \"MENU\",\n                \"dataKey\": \"visualizationId\",\n                \"text\": \"Select the visualization you would like to see\",\n                \"options\": {\n                    \"dataKey\": \"visualizations\",\n                    \"textKey\": \"name\",\n                    \"idKey\":\"id\"\n                },\n                \"nextState\": \"4788a9d6\"\n            }\n        },\n        {\n            \"id\": \"4788a9d6\",\n            \"action\": {\n                \"type\": \"WEBHOOK\",\n                \"url\": \"http://mediator:3000/api/visualizations/{visualizationId}?fields=id,description\",\n                \"dataKey\": \"description\",\n                \"responseDataPath\": \"description\",\n                \"method\": \"GET\",\n                \"nextState\": \"d5d5914b\"\n            }\n        },\n         {\n            \"id\": \"d5d5914b\",\n            \"action\": {\n                \"type\": \"WEBHOOK\",\n                \"url\": \"http://visualizer:7000/api/generate/{visualizationId}\",\n                \"dataKey\": \"visualizationImage\",\n                \"responseDataPath\": \"image\",\n                \"method\": \"GET\",\n                \"nextState\": \"a2a4b00a\"\n            }\n        },\n         {\n            \"id\": \"a2a4b00a\",\n            \"action\": {\n                \"type\": \"QUIT\",\n                \"text\": \"Here is the visualization requested. Thank you for using DHIS2 Analytics Service!\",\n                \"messageFormat\": {\n                    \"type\": \"image\",\n                    \"image\": \"{visualizationImage}\"\n                }\n            }\n        }\n    ]\n}",
+    "options": {
+      "raw": {
+        "language": "json"
+      }
+    }
+  },
+  "url": {
+    "raw": "{{baseUrl}}/flows/",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "flows",
+      ""
+    ]
+  },
+  "description": "Create flow"
+}

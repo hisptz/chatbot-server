@@ -1,0 +1,31 @@
+{
+  "method": "POST",
+  "header": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n  \"cron\": \"*/10 * * * *\",\n  \"enabled\": true,\n  \"id\": \"{{$randomUUID}}\",\n  \"job\": {\n    \"id\": \"{{jobId}}\"\n  }\n}",
+    "options": {
+      "raw": {
+        "language": "json"
+      }
+    }
+  },
+  "url": {
+    "raw": "{{baseUrl}}/schedules",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "schedules"
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "method": "DELETE",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/flows/:id",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "flows",
+      ":id"
+    ],
+    "variable": [
+      {
+        "id": "3f00614d-ba93-4104-b92c-e176cda8f996",
+        "key": "id",
+        "value": "",
+        "description": "(Required) "
+      }
+    ]
+  }
+}

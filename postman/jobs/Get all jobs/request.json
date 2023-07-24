@@ -1,0 +1,20 @@
+{
+  "method": "GET",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/jobs/",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "jobs",
+      ""
+    ]
+  },
+  "description": "Returns all jobs"
+}

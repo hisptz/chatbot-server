@@ -1,0 +1,20 @@
+{
+  "method": "GET",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "url": {
+    "raw": "{{baseUrl}}/flows/",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "flows",
+      ""
+    ]
+  },
+  "description": "Get flows"
+}

@@ -1,0 +1,85 @@
+[
+  {
+    "id": "59d65e30-9d19-4109-9930-9cc23ad31fdb",
+    "name": "Job statuses for job with the specified id",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/:id/statuses",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ":id",
+          "statuses"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) Job id"
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "[\n  {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"startTime\": \"<string>\",\n    \"endTime\": \"<string>\",\n    \"error\": \"<string>\",\n    \"response\": \"<string>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"status\": \"<string>\",\n    \"startTime\": \"<string>\",\n    \"endTime\": \"<string>\",\n    \"error\": \"<string>\",\n    \"response\": \"<string>\"\n  }\n]",
+    "uid": "27134508-59d65e30-9d19-4109-9930-9cc23ad31fdb"
+  },
+  {
+    "id": "d747b6b6-0050-4866-a186-8bcbfe0ab570",
+    "name": "Missing job id",
+    "originalRequest": {
+      "method": "GET",
+      "header": [],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/:id/statuses",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ":id",
+          "statuses"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) Job id"
+          }
+        ]
+      }
+    },
+    "status": "Bad Request",
+    "code": 400,
+    "_postman_previewlanguage": "text",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "text/plain"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "",
+    "uid": "27134508-d747b6b6-0050-4866-a186-8bcbfe0ab570"
+  }
+]

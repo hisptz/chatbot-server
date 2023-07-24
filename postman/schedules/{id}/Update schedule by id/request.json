@@ -1,0 +1,39 @@
+{
+  "method": "PUT",
+  "header": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n  \"cron\": \"*/5 * * * *\",\n  \"enabled\": false,\n  \"id\": \"{{scheduleId}}\",\n  \"job\": {\n    \"id\": \"{{jobId}}\"\n  }\n}",
+    "options": {
+      "raw": {
+        "language": "json"
+      }
+    }
+  },
+  "url": {
+    "raw": "{{baseUrl}}/schedules/:id",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "schedules",
+      ":id"
+    ],
+    "variable": [
+      {
+        "key": "id",
+        "value": "{{scheduleId}}",
+        "description": "(Required) "
+      }
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "4f3ab931-5b9f-4b07-bbe1-bcb8f756db72",
+    "name": "The created flow",
+    "originalRequest": {
+      "method": "POST",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/flows/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "flows",
+          ""
+        ]
+      }
+    },
+    "status": "Created",
+    "code": 201,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"id\": \"<string>\",\n  \"trigger\": \"<string>\",\n  \"initialState\": \"<string>\",\n  \"states\": [\n    {\n      \"id\": \"<string>\",\n      \"action\": {\n        \"type\": \"<string>\",\n        \"nextState\": \"<string>\",\n        \"text\": \"<string>\",\n        \"dataKey\": \"<string>\",\n        \"options\": [\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          },\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          }\n        ]\n      }\n    },\n    {\n      \"id\": \"<string>\",\n      \"action\": {\n        \"type\": \"<string>\",\n        \"nextState\": \"<string>\",\n        \"text\": \"<string>\",\n        \"dataKey\": \"<string>\",\n        \"options\": [\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          },\n          {\n            \"id\": \"<string>\",\n            \"text\": \"<string>\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+    "uid": "27134508-4f3ab931-5b9f-4b07-bbe1-bcb8f756db72"
+  }
+]

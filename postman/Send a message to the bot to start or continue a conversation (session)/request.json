@@ -1,0 +1,33 @@
+{
+  "method": "POST",
+  "header": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n  \"message\": {\n    \"type\": \"<string>\",\n    \"text\": \"<string>\"\n  },\n  \"from\": {\n    \"type\": \"<string>\",\n    \"number\": \"<string>\",\n    \"author\": \"<string>\",\n    \"name\": \"<string>\"\n  },\n  \"isForwarded\": \"<boolean>\"\n}",
+    "options": {
+      "raw": {
+        "language": "json"
+      }
+    }
+  },
+  "url": {
+    "raw": "{{baseUrl}}/chat/",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "chat",
+      ""
+    ]
+  },
+  "description": "Sends a message to the bot. If the sending number has an active session, the message will continue the conversation. If not, the message will trigger a new flow if the message matches any of the keywords"
+}

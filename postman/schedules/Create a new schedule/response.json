@@ -1,0 +1,47 @@
+[
+  {
+    "id": "00ca1c02-ebf7-4853-924f-054ca4202ad1",
+    "name": "Returns the created schedule",
+    "originalRequest": {
+      "method": "POST",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "{\n  \"cron\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"id\": \"<string>\",\n  \"job\": {\n    \"id\": \"<string>\"\n  }\n}",
+        "options": {
+          "raw": {
+            "language": "json"
+          }
+        }
+      },
+      "url": {
+        "raw": "{{baseUrl}}/schedules/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "schedules",
+          ""
+        ]
+      }
+    },
+    "status": "Created",
+    "code": 201,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"cron\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"id\": \"<string>\",\n  \"job\": {\n    \"id\": \"<string>\"\n  }\n}",
+    "uid": "27134508-00ca1c02-ebf7-4853-924f-054ca4202ad1"
+  }
+]

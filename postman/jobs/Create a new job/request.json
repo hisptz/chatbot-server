@@ -1,0 +1,29 @@
+{
+  "method": "POST",
+  "header": [
+    {
+      "key": "Accept",
+      "value": "application/json"
+    }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n    \"id\": \"{{$randomUUID}}\",\n    \"description\": \"Test RMNCAH\",\n    \"visualizations\": [\n        {\n            \"id\": \"JjZZ09UxARX\",\n            \"name\": \"RMNCAH - Trends in coverage of interventions for maternal and newborn (%)\"\n        }\n    ],\n    \"contacts\": [\n        {\n            \"id\": \"KuD6NyRwhcI\",\n            \"number\": \"255712626160\",\n            \"type\": \"individual\"\n        }\n    ],\n    \"schedules\": [\n       \n    ]\n}",
+    "options": {
+      "raw": {
+        "language": "json"
+      }
+    }
+  },
+  "url": {
+    "raw": "{{baseUrl}}/jobs/",
+    "host": [
+      "{{baseUrl}}"
+    ],
+    "path": [
+      "jobs",
+      ""
+    ]
+  },
+  "description": "Creates a new job"
+}

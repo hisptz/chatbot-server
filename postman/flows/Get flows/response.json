@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ed2efe55-06cc-4fbd-989c-7344c0dd6d24",
+    "name": "Flows",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/flows/",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "flows",
+          ""
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "[\n  {\n    \"id\": \"<string>\",\n    \"trigger\": \"<string>\",\n    \"initialState\": \"<string>\",\n    \"states\": [\n      {\n        \"id\": \"<string>\",\n        \"action\": {\n          \"type\": \"<string>\",\n          \"nextState\": \"<string>\",\n          \"text\": \"<string>\",\n          \"dataKey\": \"<string>\",\n          \"options\": [\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            },\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            }\n          ]\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"action\": {\n          \"type\": \"<string>\",\n          \"nextState\": \"<string>\",\n          \"text\": \"<string>\",\n          \"dataKey\": \"<string>\",\n          \"options\": [\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            },\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            }\n          ]\n        }\n      }\n    ]\n  },\n  {\n    \"id\": \"<string>\",\n    \"trigger\": \"<string>\",\n    \"initialState\": \"<string>\",\n    \"states\": [\n      {\n        \"id\": \"<string>\",\n        \"action\": {\n          \"type\": \"<string>\",\n          \"nextState\": \"<string>\",\n          \"text\": \"<string>\",\n          \"dataKey\": \"<string>\",\n          \"options\": [\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            },\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            }\n          ]\n        }\n      },\n      {\n        \"id\": \"<string>\",\n        \"action\": {\n          \"type\": \"<string>\",\n          \"nextState\": \"<string>\",\n          \"text\": \"<string>\",\n          \"dataKey\": \"<string>\",\n          \"options\": [\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            },\n            {\n              \"id\": \"<string>\",\n              \"text\": \"<string>\"\n            }\n          ]\n        }\n      }\n    ]\n  }\n]",
+    "uid": "27134508-ed2efe55-06cc-4fbd-989c-7344c0dd6d24"
+  }
+]

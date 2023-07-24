@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1cf1162f-bf99-4bfe-8ebc-f67f3ba3f98e",
+    "name": "Job run successfully",
+    "originalRequest": {
+      "method": "POST",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/jobs/:id/push",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "jobs",
+          ":id",
+          "push"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) Job id"
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"id\": \"<string>\",\n  \"status\": \"<string>\",\n  \"startTime\": \"<string>\",\n  \"endTime\": \"<string>\",\n  \"error\": \"<string>\",\n  \"response\": \"<string>\"\n}",
+    "uid": "27134508-1cf1162f-bf99-4bfe-8ebc-f67f3ba3f98e"
+  }
+]

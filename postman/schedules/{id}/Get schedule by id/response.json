@@ -1,0 +1,88 @@
+[
+  {
+    "id": "4e4856a4-ed8e-414d-a055-84e902eec4c3",
+    "name": "A schedule",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/schedules/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "schedules",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "OK",
+    "code": 200,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"cron\": \"<string>\",\n  \"enabled\": \"<boolean>\",\n  \"id\": \"<string>\",\n  \"job\": {\n    \"id\": \"<string>\"\n  }\n}",
+    "uid": "27134508-4e4856a4-ed8e-414d-a055-84e902eec4c3"
+  },
+  {
+    "id": "b58cc0b0-67a8-467c-b17b-e6fc95274654",
+    "name": "Schedule not found",
+    "originalRequest": {
+      "method": "GET",
+      "header": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "url": {
+        "raw": "{{baseUrl}}/schedules/:id",
+        "host": [
+          "{{baseUrl}}"
+        ],
+        "path": [
+          "schedules",
+          ":id"
+        ],
+        "variable": [
+          {
+            "key": "id",
+            "value": "",
+            "description": "(Required) "
+          }
+        ]
+      }
+    },
+    "status": "Not Found",
+    "code": 404,
+    "_postman_previewlanguage": "json",
+    "header": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "cookie": [],
+    "responseTime": null,
+    "body": "{\n  \"message\": \"<string>\"\n}",
+    "uid": "27134508-b58cc0b0-67a8-467c-b17b-e6fc95274654"
+  }
+]
