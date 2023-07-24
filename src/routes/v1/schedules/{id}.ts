@@ -13,6 +13,10 @@ export const parameters = [
 export const GET: Operation = [
     async (req, res) => {
         const schedule = await getSchedule(req.params.id);
+        if (!schedule) {
+            res.status(404).send("Schedule not found");
+            return;
+        }
         res.json(schedule);
     }
 ]

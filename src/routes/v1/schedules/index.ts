@@ -37,7 +37,7 @@ export const POST: Operation = [
 
         try {
             const createdSchedule = await createSchedule(parsedData.data);
-            res.json(createdSchedule);
+            res.status(201).json(createdSchedule);
         } catch (e) {
             res.status(500).send(e);
         }

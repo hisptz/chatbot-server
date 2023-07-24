@@ -40,7 +40,7 @@ export const POST: Operation = [
         const job = parsedData.data;
         try {
             const response = await createJob(job);
-            res.json(response);
+            res.status(201).json(response);
         } catch (e) {
             res.status(500).send(e);
             return;

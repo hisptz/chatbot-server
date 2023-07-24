@@ -53,6 +53,13 @@ export const PUT: Operation = [
             res.status(400).send("Missing id");
             return;
         }
+
+        const requestedJob = await getJobById(id);
+        if (!requestedJob) {
+            res.status(404).send("Job not found");
+            return;
+        }
+
         const data = req.body;
         const parsedData = JobSchema.safeParse(data);
         if (!parsedData.success) {

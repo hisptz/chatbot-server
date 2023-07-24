@@ -1,5 +1,5 @@
 import {Operation} from "express-openapi";
-import {getJobStatus} from "../../../../services/v1/jobs";
+import {getJobById, getJobStatus} from "../../../../services/v1/jobs";
 
 export const parameters = [{
     in: "path",
@@ -10,13 +10,23 @@ export const parameters = [{
 
 export const GET: Operation = [
     async (req, res) => {
-        const {id} = req.params;
-        if (!id) {
-            res.status(400).send("Missing job id");
-            return;
+        try {
+            const {id} = req.params;
+            if (!id) {
+                res.status(400).send("Missing job id");
+                return;
+            }
+            const requestedJob = await getJobById(id);
+            if (!requestedJob) {
+                res.status(404).send("Job not found");
+                return;
+            }
+            const jobStatuses = await getJobStatus(id);
+            res.json(jobStatuses);
+        } catch (e: any) {
+            res.status(500).send(e.message);
+
         }
-        const jobs = await getJobStatus(id);
-        res.json(jobs);
     }
 ]
 
