@@ -10,12 +10,31 @@ import {config} from "dotenv";
 import {compact, isEmpty, remove, set} from "lodash";
 import {getMessage, sendMessage} from "./push";
 import {getJobById} from "../services/v1/jobs";
+import axios from "axios";
+import {sanitizeEnv} from "../utils/env";
 
 
-config()
+config();
+sanitizeEnv();
+
 
 const whatsappURL = process.env.WHATSAPP_URL ?? '';
+const whatsappAPIKey = process.env.WHATSAPP_API_KEY ?? "";
 const visualizerURL = process.env.VISUALIZER_URL ?? '';
+const visualizerAPIKey = process.env.VISUALIZER_API_KEY ?? '';
+
+const whatsappClient = axios.create({
+    baseURL: whatsappURL,
+    headers: {
+        'x-api-key': whatsappAPIKey
+    }
+})
+const visualizerClient = axios.create({
+    baseURL: visualizerURL,
+    headers: {
+        'x-api-key': visualizerAPIKey
+    }
+});
 
 export const scheduledJobs: { id: string, job: CronJob }[] = []
 
@@ -51,12 +70,12 @@ export async function pushJob(job: AnalyticsPushJob & {
         const messages = await mapSeries(visualizations, asyncify(async (visualization: any) => getMessage(visualization, {
             recipients: to,
             description,
-            gateway: visualizerURL
+            visualizerClient
         })));
 
-        const messageResponse = await mapSeries(messages, asyncify(async (message: any) => sendMessage(message, whatsappURL)));
+        const messageResponse = await mapSeries(messages, asyncify(async (message: any) => sendMessage(message, whatsappClient)));
         logger.info(`Messages sent!`);
-        return await client.analyticsPushJobStatus.update({
+        return client.analyticsPushJobStatus.update({
             where: {
                 id: statusId
             },
@@ -183,11 +202,13 @@ export async function applySchedule(data: AnalyticsPushJobSchedule & { job: Anal
 export async function removeSchedule(data: AnalyticsPushJobSchedule & { job: AnalyticsPushJob }) {
     const scheduledJobId = `${data.job.id}-${data.id}`;
     const isScheduleRunning = !!scheduledJobs.find(({id}) => id === scheduledJobId);
-    if (!isScheduleRunning) {
+    if (isScheduleRunning) {
+        logger.info(`Removing schedule ${data.id}...`);
         const cronJobIndex = scheduledJobs.findIndex(({id}) => id === scheduledJobId);
         const cronJob = scheduledJobs[cronJobIndex];
         cronJob?.job?.stop();
         remove(scheduledJobs, (_, index) => cronJobIndex === index);
+        logger.info(`${data.id} removed`);
     }
 }
 

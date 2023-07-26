@@ -4,8 +4,12 @@ import {AnalyticsPushJobAPI} from "../../../schemas/job";
 import logger from "../../../logging";
 import {removeSchedule, scheduleJob} from "../../../engine/scheduling";
 import {asyncify, forEach} from "async";
+import {sanitizeEnv} from "../../../utils/env";
+import {differenceBy, pick} from "lodash";
 
 config()
+sanitizeEnv();
+
 
 export async function getJobs() {
     return client.analyticsPushJob.findMany({
@@ -92,6 +96,19 @@ export async function createJob(data: AnalyticsPushJobAPI) {
 
 export async function updateJob(id: string, data: AnalyticsPushJobAPI) {
     try {
+        const job = await client.analyticsPushJob.findUnique({
+            where: {
+                id
+            },
+            include: {
+                visualizations: true,
+                contacts: true
+            }
+        });
+
+        const deletedVisualizations = differenceBy(job?.visualizations, data?.visualizations ?? [], 'id').map((vis) => pick(vis, 'id'));
+        const deletedContacts = differenceBy(job?.contacts, data?.contacts ?? [], 'id').map((vis) => pick(vis, 'id'));
+
         const updatedJob = await client.analyticsPushJob.update({
             where: {
                 id
@@ -99,6 +116,12 @@ export async function updateJob(id: string, data: AnalyticsPushJobAPI) {
             data: {
                 ...data,
                 visualizations: {
+                    deleteMany: {
+                        id: {
+                            in: data.visualizations?.map((visualization) => visualization.id) ?? []
+                        }
+                    },
+                    delete: deletedVisualizations,
                     connectOrCreate: data.visualizations?.map((visualization) => ({
                         create: {
                             ...visualization,
@@ -110,11 +133,17 @@ export async function updateJob(id: string, data: AnalyticsPushJobAPI) {
                     }))
                 },
                 contacts: {
+                    deleteMany: {
+                        id: {
+                            in: data.contacts.map((contact) => contact.id) ?? []
+                        }
+                    },
+                    delete: deletedContacts,
                     connectOrCreate: data.contacts?.map((contact) => ({
                         create: contact,
                         where: {
                             id: contact.id
-                        }
+                        },
                     }))
                 },
                 schedules: {
@@ -151,6 +180,8 @@ export async function deleteJob(id: string) {
                 id
             },
             include: {
+                contacts: true,
+                visualizations: true,
                 schedules: {
                     include: {
                         job: true

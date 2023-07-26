@@ -1,14 +1,3 @@
-/*
-  Warnings:
-
-  - The `method` column on the `Action` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - The `step` column on the `Session` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-  - You are about to drop the `Job` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `JobStatus` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Schedule` table. If the table is not empty, all the data it contains will be lost.
-  - Changed the type of `type` on the `Action` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
-
-*/
 -- CreateEnum
 CREATE TYPE "ActionType" AS ENUM ('ROUTER', 'ASSIGN', 'FUNCTION', 'WEBHOOK', 'MENU', 'INPUT', 'QUIT');
 
@@ -19,32 +8,92 @@ CREATE TYPE "ActionAPICallMethod" AS ENUM ('GET', 'POST');
 CREATE TYPE "SessionStateStep" AS ENUM ('WAITING', 'COMPLETED');
 
 -- CreateEnum
-CREATE TYPE "ContactType" AS ENUM ('GROUP', 'INDIVIDUAL');
+CREATE TYPE "ContactType" AS ENUM ('group', 'individual');
 
--- DropForeignKey
-ALTER TABLE "JobStatus" DROP CONSTRAINT "JobStatus_jobId_fkey";
+-- CreateTable
+CREATE TABLE "Action" (
+    "id" TEXT NOT NULL,
+    "type" "ActionType" NOT NULL,
+    "nextState" TEXT,
+    "text" TEXT,
+    "params" TEXT,
+    "dataKey" TEXT,
+    "functionName" TEXT,
+    "webhookURL" TEXT,
+    "responseType" TEXT,
+    "responseDataPath" TEXT,
+    "headers" TEXT,
+    "method" "ActionAPICallMethod",
+    "body" TEXT,
+    "messageFormat" TEXT,
+    "options" TEXT,
 
--- DropForeignKey
-ALTER TABLE "Schedule" DROP CONSTRAINT "Schedule_jobId_fkey";
+    CONSTRAINT "Action_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "Action" DROP COLUMN "type",
-ADD COLUMN     "type" "ActionType" NOT NULL,
-DROP COLUMN "method",
-ADD COLUMN     "method" "ActionAPICallMethod";
+-- CreateTable
+CREATE TABLE "Route" (
+    "id" TEXT NOT NULL,
+    "actionId" TEXT NOT NULL,
+    "expression" TEXT,
+    "nextStateId" TEXT NOT NULL,
 
--- AlterTable
-ALTER TABLE "Session" DROP COLUMN "step",
-ADD COLUMN     "step" "SessionStateStep";
+    CONSTRAINT "Route_pkey" PRIMARY KEY ("id")
+);
 
--- DropTable
-DROP TABLE "Job";
+-- CreateTable
+CREATE TABLE "FlowState" (
+    "id" TEXT NOT NULL,
+    "actionId" TEXT NOT NULL,
+    "retries" INTEGER NOT NULL,
+    "flowId" TEXT NOT NULL,
 
--- DropTable
-DROP TABLE "JobStatus";
+    CONSTRAINT "FlowState_pkey" PRIMARY KEY ("id")
+);
 
--- DropTable
-DROP TABLE "Schedule";
+-- CreateTable
+CREATE TABLE "Flow" (
+    "id" TEXT NOT NULL,
+    "trigger" TEXT NOT NULL,
+    "rootState" TEXT NOT NULL,
+    "FlowStateId" TEXT,
+
+    CONSTRAINT "Flow_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Connection" (
+    "id" TEXT NOT NULL,
+    "identifier" TEXT NOT NULL,
+
+    CONSTRAINT "Connection_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL,
+    "cancelled" BOOLEAN,
+    "startTime" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "connectionId" TEXT NOT NULL,
+    "stateId" TEXT NOT NULL,
+    "FlowId" TEXT NOT NULL,
+    "tries" INTEGER NOT NULL,
+    "data" TEXT NOT NULL,
+    "step" "SessionStateStep",
+
+    CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Entry" (
+    "id" TEXT NOT NULL,
+    "time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "text" TEXT NOT NULL,
+    "sequence" INTEGER NOT NULL,
+    "sessionId" TEXT NOT NULL,
+
+    CONSTRAINT "Entry_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Visualization" (
@@ -107,6 +156,12 @@ CREATE TABLE "_AnalyticsPushJobToVisualization" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Flow_trigger_key" ON "Flow"("trigger");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Connection_identifier_key" ON "Connection"("identifier");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Visualization_id_key" ON "Visualization"("id");
 
 -- CreateIndex
@@ -126,6 +181,30 @@ CREATE UNIQUE INDEX "_AnalyticsPushJobToVisualization_AB_unique" ON "_AnalyticsP
 
 -- CreateIndex
 CREATE INDEX "_AnalyticsPushJobToVisualization_B_index" ON "_AnalyticsPushJobToVisualization"("B");
+
+-- AddForeignKey
+ALTER TABLE "Route" ADD CONSTRAINT "Route_actionId_fkey" FOREIGN KEY ("actionId") REFERENCES "Action"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FlowState" ADD CONSTRAINT "FlowState_actionId_fkey" FOREIGN KEY ("actionId") REFERENCES "Action"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "FlowState" ADD CONSTRAINT "FlowState_flowId_fkey" FOREIGN KEY ("flowId") REFERENCES "Flow"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Flow" ADD CONSTRAINT "Flow_FlowStateId_fkey" FOREIGN KEY ("FlowStateId") REFERENCES "FlowState"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_connectionId_fkey" FOREIGN KEY ("connectionId") REFERENCES "Connection"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_stateId_fkey" FOREIGN KEY ("stateId") REFERENCES "FlowState"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Session" ADD CONSTRAINT "Session_FlowId_fkey" FOREIGN KEY ("FlowId") REFERENCES "Flow"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Entry" ADD CONSTRAINT "Entry_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "Session"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AnalyticsPushJobStatus" ADD CONSTRAINT "AnalyticsPushJobStatus_jobId_fkey" FOREIGN KEY ("jobId") REFERENCES "AnalyticsPushJob"("id") ON DELETE CASCADE ON UPDATE CASCADE;
