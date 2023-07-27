@@ -11,7 +11,7 @@ const defaultFlow = {
             "id": "b12ffbf3",
             "action": {
                 "type": "WEBHOOK",
-                "url": "http://mediator:3000/api/dataStore/hisptz-analytics-groups?fields=id,name",
+                "url": "http://mediator:4020/api/dataStore/hisptz-analytics-groups?fields=id,name",
                 "responseDataPath": "entries",
                 "dataKey": "groups",
                 "method": "GET",
@@ -36,7 +36,7 @@ const defaultFlow = {
             "id": "7f6902aa",
             "action": {
                 "type": "WEBHOOK",
-                "url": "http://mediator:3000/api/dataStore/hisptz-analytics-groups/{groupId}",
+                "url": "http://mediator:4020/api/dataStore/hisptz-analytics-groups/{groupId}",
                 "responseDataPath": "visualizations",
                 "dataKey": "visualizations",
                 "method": "GET",
@@ -61,7 +61,7 @@ const defaultFlow = {
             "id": "4788a9d6",
             "action": {
                 "type": "WEBHOOK",
-                "url": "http://mediator:3000/api/visualizations/{visualizationId}?fields=id,description",
+                "url": "http://mediator:4020/api/visualizations/{visualizationId}?fields=id,description",
                 "dataKey": "description",
                 "responseDataPath": "description",
                 "method": "GET",
@@ -72,7 +72,7 @@ const defaultFlow = {
             "id": "d5d5914b",
             "action": {
                 "type": "WEBHOOK",
-                "url": "http://visualizer:7000/api/generate/{visualizationId}",
+                "url": "http://visualizer:4030/vis/generate/{visualizationId}",
                 "dataKey": "visualizationImage",
                 "responseDataPath": "image",
                 "method": "GET",
