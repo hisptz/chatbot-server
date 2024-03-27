@@ -29,7 +29,8 @@
     "start": "node app/src/index.js",
     "migrate": "npx prisma migrate dev --name init",
     "dev": "nodemon -x ts-node-esm src/index.ts --files",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "postbuild": "./postbuild.sh"
   },
   "dependencies": {
     "@anatine/zod-openapi": "^2.0.1",

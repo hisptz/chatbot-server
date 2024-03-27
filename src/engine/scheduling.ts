@@ -152,7 +152,6 @@ export async function scheduleJob(job: AnalyticsPushJob & {
         scheduledJob.start();
         scheduledJobs.push({id: scheduledJobId, job: scheduledJob});
     }
-
 }
 
 export async function applySchedule(data: AnalyticsPushJobSchedule & { job: AnalyticsPushJob }) {
